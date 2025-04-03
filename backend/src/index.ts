@@ -16,6 +16,8 @@ import authRoutes from "./routes/auth.route";
 
 const app = express();
 
+// test push notif
+
 app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
