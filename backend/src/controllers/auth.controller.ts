@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import passport from "passport";
 import jwt from "jsonwebtoken";
-import User, { UserDocument } from "../models/User";
+import User, { UserDocument } from "../models/User.model";
 
 export const discordAuthenticatePassport = passport.authenticate("discord");
 

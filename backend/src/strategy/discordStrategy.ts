@@ -1,7 +1,7 @@
 import "dotenv/config";
 import passport from "passport";
 import { Strategy as DiscordStrategy } from "passport-discord";
-import User, { UserDocument } from "../models/User";
+import User, { UserDocument } from "../models/User.model";
 
 const clientID = process.env.CLIENT_ID;
 const clientSecret = process.env.CLIENT_SECRET;

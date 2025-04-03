@@ -19,3 +19,11 @@ export const pingBot = () => {
 
   attemptPing();
 };
+
+export function DayHourMinuteToSeconds(
+  days: number,
+  hours: number,
+  minutes: number
+): number {
+  return days * 86400 + hours * 3600 + minutes * 60;
+}
