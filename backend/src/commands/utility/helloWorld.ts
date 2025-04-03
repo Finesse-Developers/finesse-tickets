@@ -2,7 +2,7 @@ import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 
 export default {
   data: new SlashCommandBuilder()
-    .setName("Hello World")
+    .setName("hello-world")
     .setDescription('Replies with "Hello World"'),
   async execute(interaction: ChatInputCommandInteraction): Promise<void> {
     try {
