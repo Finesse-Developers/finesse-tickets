@@ -1,7 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 import passport from "passport";
-import { UserDocument } from "../models/User.model";
+import UserModel, { UserDocument } from "../models/User.model";
 import { client } from "../bot";
+import { Session, SessionData } from "express-session";
+
+interface CustomSessionData extends SessionData {
+  passport?: {
+    user: string;
+  };
+}
+
+interface CustomRequest extends Request {
+  session: Session & CustomSessionData;
+}
 
 export const discordAuthenticatePassport = (
   req: Request,
@@ -17,20 +28,21 @@ export const discordAuthenticatePassport = (
 };
 
 export const discordAuthRedirect = passport.authenticate("discord", {
-  // failureRedirect: "http://localhost:5173/",
-  // successRedirect: "http://localhost:5173/dashboard",
-  failureRedirect: "/",
-  successRedirect: "/auth/dashboard",
+  failureRedirect: "http://localhost:5173/",
+  successRedirect: "http://localhost:5173/dashboard",
+  // failureRedirect: "/",
+  // successRedirect: "/auth/dashboard",
 });
 
-export const authorizeUser = async (req: Request, res: Response) => {
+export const authorizeUser = async (req: CustomRequest, res: Response) => {
   if (!req.user) {
     res.redirect("/");
     return;
   }
 
-  // res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
-  res.redirect("/auth/dashboard");
+  res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
+  // res.redirect("http://localhost:5173/dashboard");
+  return;
 };
 
 export const getCurrentUser = async (
@@ -58,8 +70,6 @@ export const getAdminServers = async (
 
     const user = req.user as UserDocument;
     const guilds = client.guilds.cache;
-
-    console.log("Guilds available:", guilds);
 
     const adminServers = [];
 
@@ -98,6 +108,44 @@ export const getAdminServers = async (
     return;
   } catch (error) {
     console.error("Error fetching admin servers:", error);
+    res.status(500).json({ error: "Internal server error" });
+    return;
+  }
+};
+
+export const logout = (req: Request, res: Response) => {
+  req.session.destroy((err: Error | null) => {
+    if (err) {
+      return res.status(500).send("Error logging out");
+    }
+    res.clearCookie("connect.sid"); // Remove the session cookie
+    res.status(200).send("Logged out");
+    return;
+  });
+};
+
+export const checkSession = async (req: CustomRequest, res: Response) => {
+  // If there's no session or no user in the session, return an unauthorized error
+  if (!req.session.passport?.user) {
+    res.status(401).json({ message: "Not authenticated" });
+    return;
+  }
+
+  try {
+    console.log(req.session.passport.user);
+    // Fetch the user from the database using the discordId stored in the session
+    const user = await UserModel.findById(req.session.passport.user);
+
+    if (!user) {
+      res.status(401).json({ message: "User not found" });
+      return;
+    }
+
+    // Return the user object
+    res.json(user);
+    return;
+  } catch (error) {
+    console.error("Error fetching user from database:", error);
     res.status(500).json({ error: "Internal server error" });
     return;
   }
