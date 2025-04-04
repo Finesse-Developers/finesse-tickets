@@ -28,6 +28,7 @@ passport.use(
           const newUser = await User.create({
             discordId: profile.id,
             username: profile.username,
+            avatar: profile.avatar,
           });
           const savedUser = await newUser.save();
           done(null, savedUser);

@@ -6,7 +6,7 @@ export interface CustomClient extends Client {
   commands: Collection<string, any>;
 }
 
-const client = new Client({
+export const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers,
