@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import passport from "passport";
-import UserModel, { UserDocument } from "../models/User.model";
+import UserModel from "../models/User.model";
 import { client } from "../bot";
 import { Session, SessionData } from "express-session";
 
@@ -15,28 +15,28 @@ interface CustomRequest extends Request {
 }
 
 export const discordAuthenticatePassport = (
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {
-  if (req.user) {
+  if (req.session.passport?.user) {
     // If user is already authenticated, redirect to the dashboard
-    return res.redirect("/auth/dashboard");
+    return res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
   } else {
     passport.authenticate("discord")(req, res, next);
   }
 };
 
 export const discordAuthRedirect = passport.authenticate("discord", {
-  failureRedirect: "http://localhost:5173/",
-  successRedirect: "http://localhost:5173/dashboard",
+  failureRedirect: `${process.env.FRONTEND_URL}`,
+  successRedirect: `${process.env.FRONTEND_URL}/dashboard`,
   // failureRedirect: "/",
   // successRedirect: "/auth/dashboard",
 });
 
 export const authorizeUser = async (req: CustomRequest, res: Response) => {
-  if (!req.user) {
-    res.redirect("/");
+  if (!req.session.passport?.user) {
+    res.redirect(`${process.env.FRONTEND_URL}/`);
     return;
   }
 
@@ -46,10 +46,10 @@ export const authorizeUser = async (req: CustomRequest, res: Response) => {
 };
 
 export const getCurrentUser = async (
-  req: Request,
+  req: CustomRequest,
   res: Response
 ): Promise<void> => {
-  if (!req.user) {
+  if (!req.session.passport?.user) {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
@@ -59,16 +59,21 @@ export const getCurrentUser = async (
 };
 
 export const getAdminServers = async (
-  req: Request,
+  req: CustomRequest,
   res: Response
 ): Promise<void> => {
   try {
-    if (!req.user) {
+    if (!req.session.passport?.user) {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
 
-    const user = req.user as UserDocument;
+    const user = await UserModel.findById(req.session.passport.user);
+    if (!user) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
     const guilds = client.guilds.cache;
 
     const adminServers = [];
@@ -104,7 +109,7 @@ export const getAdminServers = async (
       }
     }
 
-    res.json({ adminServers });
+    res.json(adminServers);
     return;
   } catch (error) {
     console.error("Error fetching admin servers:", error);

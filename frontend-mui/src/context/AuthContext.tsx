@@ -42,9 +42,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           const userData = await res.json();
           console.log(userData);
           setUser(userData);
+          return;
         }
+        setUser(null);
       } catch (error) {
         console.error("Failed to check session", error);
+        setUser(null);
+        document.location.href = "/";
       }
     };
     checkSession();
