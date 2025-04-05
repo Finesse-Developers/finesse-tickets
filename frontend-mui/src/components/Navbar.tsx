@@ -25,11 +25,6 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   padding: "16px 24px",
 }));
 
-const profile = {
-  id: "982491279369830460",
-  avatar: "2a488831d6e6673d73163b0d58a42f51",
-};
-
 export default function Navbar() {
   const { user, login, logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -99,7 +94,7 @@ export default function Navbar() {
               <>
                 {/* Avatar that opens the menu on click */}
                 <Avatar
-                  src={`https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png`}
+                  src={`https://cdn.discordapp.com/avatars/${user.discordId}/${user.avatar}.png`}
                   onClick={handleMenuOpen}
                   sx={{ cursor: "pointer" }}
                 />

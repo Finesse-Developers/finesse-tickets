@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { RequestHandler, Router } from "express";
 import {
   authorizeUser,
   checkSession,
@@ -11,12 +11,16 @@ import {
 
 const router = Router();
 
-router.get("/", discordAuthenticatePassport);
-router.get("/discord/callback", discordAuthRedirect, authorizeUser);
+router.get("/", discordAuthenticatePassport as RequestHandler);
+router.get(
+  "/discord/callback",
+  discordAuthRedirect,
+  authorizeUser as RequestHandler
+);
 // Get current user
-router.get("/me", getCurrentUser);
-router.get("/check-session", checkSession);
-router.get("/dashboard", getAdminServers);
+router.get("/me", getCurrentUser as RequestHandler);
+router.get("/check-session", checkSession as RequestHandler);
+router.get("/dashboard", getAdminServers as RequestHandler);
 router.post("/logout", logout);
 
 export default router;

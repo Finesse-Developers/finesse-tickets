@@ -19,11 +19,14 @@ passport.use(
       callbackURL,
       scope: ["identify", "guilds"],
     },
-    async (_accessToken, _refreshToken, profile, done) => {
+    async (accessToken, _refreshToken, profile, done) => {
       try {
         const user = await User.findOne({ discordId: profile.id });
         if (user) {
-          done(null, user);
+          done(null, {
+            id: user.id,
+            accessToken,
+          });
         } else {
           const newUser = await User.create({
             discordId: profile.id,
@@ -31,7 +34,10 @@ passport.use(
             avatar: profile.avatar,
           });
           const savedUser = await newUser.save();
-          done(null, savedUser);
+          done(null, {
+            id: savedUser.id,
+            accessToken,
+          });
         }
       } catch (error) {
         console.log(error);
@@ -42,18 +48,27 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
-  const discordUser = user as UserDocument;
+  const discordUser = user as UserDocument & { accessToken: string };
   console.log("Serializing User");
   // uses mongodb id instead of discord id
-  done(null, discordUser.id);
+  done(null, { id: discordUser.id, accessToken: discordUser.accessToken });
 });
 
-passport.deserializeUser(async (id: any, done) => {
+passport.deserializeUser(async (sessionUser, done) => {
   try {
+    const { id, accessToken } = sessionUser as {
+      id: string;
+      accessToken: string;
+    };
+
     const user = await User.findById(id);
     if (!user) return done(null, false);
+
     console.log("Deserialized User:", user.discordId);
-    done(null, user);
+    done(null, {
+      user,
+      accessToken, // Now correctly retrieved from session, not DB
+    });
   } catch (error) {
     done(error, null);
   }

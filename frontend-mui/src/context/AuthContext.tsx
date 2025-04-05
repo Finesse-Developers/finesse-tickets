@@ -10,6 +10,7 @@ type AuthUserType = {
   discordId: string;
   username: string;
   avatar: string | null;
+  accessToken: string;
 };
 
 interface AuthContextType {
@@ -35,15 +36,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const res = await fetch(`http://localhost:6969/auth/check-session`, {
-          credentials: "include",
-        });
-        if (res.ok) {
-          const userData = await res.json();
-          console.log(userData);
-          setUser(userData);
-          return;
+        // Parallelize the fetch calls
+        const [userSessionRes, userRes] = await Promise.all([
+          fetch(`http://localhost:6969/auth/check-session`, {
+            credentials: "include",
+          }),
+          fetch(`http://localhost:6969/auth/me`, {
+            credentials: "include",
+          }),
+        ]);
+
+        // Check session validity and get user data
+        if (userSessionRes.ok) {
+          const userSession = await userSessionRes.json();
+          if (userSession.accessToken && userRes.ok) {
+            const data = await userRes.json();
+            console.log(data);
+            setUser(data);
+            return;
+          }
         }
+
         setUser(null);
       } catch (error) {
         console.error("Failed to check session", error);
