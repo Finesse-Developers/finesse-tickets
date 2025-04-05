@@ -13,6 +13,7 @@ const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) throw new Error("missing .env variables");
 
 import authRoutes from "./routes/auth.route";
+import dashboardRoutes from "./routes/dashboard.route";
 
 const app = express();
 
@@ -42,6 +43,7 @@ mongoose
   .catch((err) => console.error(err));
 
 app.use("/auth", authRoutes);
+app.use("/dashboard", dashboardRoutes);
 app.get("/", (_req: Request, res: Response) => {
   res.send(200);
   return;

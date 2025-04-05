@@ -68,6 +68,7 @@ export default function Navbar() {
                   fontWeight: "bold",
                   textDecoration: "none",
                   color: "white",
+                  display: { xs: "none", sm: "block" },
                 }}
               >
                 Finesse Tickets
@@ -76,7 +77,7 @@ export default function Navbar() {
           </Box>
           <Box
             sx={{
-              display: { xs: "none", md: "flex" },
+              display: "fiex",
               gap: 1,
               alignItems: "center",
             }}

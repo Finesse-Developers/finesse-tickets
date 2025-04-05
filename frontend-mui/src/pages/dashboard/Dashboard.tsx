@@ -34,7 +34,7 @@ export default function Dashboard() {
       setIsLoading(true);
       setDashboardMessage(null);
       try {
-        const res = await fetch(`http://localhost:6969/auth/dashboard`, {
+        const res = await fetch(`http://localhost:6969/dashboard`, {
           credentials: "include",
         });
 
@@ -70,6 +70,7 @@ export default function Dashboard() {
         flexDirection: "column",
         height: "80vh",
         mt: "calc(100px + var(--template-frame-height, 0px))",
+        overflow: "auto",
       }}
     >
       {isLoading ? (
@@ -122,7 +123,7 @@ export default function Dashboard() {
               adminServers.map((server) => (
                 <Card
                   sx={{
-                    maxWidth: 150,
+                    width: 150,
                     backgroundColor: "transparent",
                     padding: "10px",
                     cursor: "pointer",
@@ -133,39 +134,44 @@ export default function Dashboard() {
                   elevation={0}
                   key={server.id}
                 >
-                  {server.icon ? (
-                    <Box
-                      component="img"
-                      src={server.icon}
-                      alt={server.name}
-                      sx={{
-                        borderRadius: "20px",
-                        width: "100px",
-                        height: "100px",
-                        margin: "0 auto",
-                        objectFit: "cover",
-                      }}
-                    />
-                  ) : (
-                    <Avatar
-                      sx={{
-                        width: 100,
-                        height: 100,
-                        backgroundColor: "gray",
-                        margin: "0 auto",
-                      }}
-                    >
-                      <Typography variant="h4">
-                        {server.name.charAt(0).toUpperCase()}
-                      </Typography>
-                    </Avatar>
-                  )}
-                  <Typography
-                    variant="h6"
-                    sx={{ marginTop: 1, fontSize: "14px", color: "white" }}
+                  <Link
+                    to={`/dashboard/${server.id}`}
+                    style={{ textDecoration: "none" }}
                   >
-                    {server.name}
-                  </Typography>
+                    {server.icon ? (
+                      <Box
+                        component="img"
+                        src={server.icon}
+                        alt={server.name}
+                        sx={{
+                          borderRadius: "20px",
+                          width: "100px",
+                          height: "100px",
+                          margin: "0 auto",
+                          objectFit: "cover",
+                        }}
+                      />
+                    ) : (
+                      <Avatar
+                        sx={{
+                          width: 100,
+                          height: 100,
+                          backgroundColor: "gray",
+                          margin: "0 auto",
+                        }}
+                      >
+                        <Typography variant="h4">
+                          {server.name.charAt(0).toUpperCase()}
+                        </Typography>
+                      </Avatar>
+                    )}
+                    <Typography
+                      variant="h6"
+                      sx={{ marginTop: 1, fontSize: "14px", color: "white" }}
+                    >
+                      {server.name}
+                    </Typography>
+                  </Link>
                 </Card>
               ))
             )}
