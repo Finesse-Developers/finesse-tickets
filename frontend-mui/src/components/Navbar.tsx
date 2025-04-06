@@ -44,7 +44,7 @@ export default function Navbar() {
 
   return (
     <AppBar
-      position="fixed"
+      position="static"
       enableColorOnDark
       sx={{
         boxShadow: 0,
@@ -95,7 +95,11 @@ export default function Navbar() {
               <>
                 {/* Avatar that opens the menu on click */}
                 <Avatar
-                  src={`https://cdn.discordapp.com/avatars/${user.discordId}/${user.avatar}.png`}
+                  src={
+                    user?.avatar
+                      ? `https://cdn.discordapp.com/avatars/${user.discordId}/${user.avatar}.png`
+                      : ""
+                  }
                   onClick={handleMenuOpen}
                   sx={{ cursor: "pointer" }}
                 />

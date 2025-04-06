@@ -1,4 +1,4 @@
-import { Box, Container } from "@mui/material";
+import { Box } from "@mui/material";
 import Navbar from "../components/Navbar";
 import { Outlet } from "react-router-dom";
 import Footer from "../components/Footer";
@@ -9,9 +9,13 @@ const AppLayout = () => {
       sx={{
         background:
           "linear-gradient(to bottom,rgb(43, 52, 61),rgb(28, 30, 65))", // Dark to dark blue gradient
-        minHeight: "100vh",
+        height: "100vh",
+        width: "100vw",
         display: "flex",
         flexDirection: "column",
+        // border: "1px solid blue",
+        padding: 0,
+        margin: 0,
       }}
     >
       {/* Navbar */}
@@ -21,15 +25,29 @@ const AppLayout = () => {
       <Box
         sx={{
           flexGrow: 1,
+          height: "80%",
+          width: "100%",
           display: "flex",
           justifyContent: "center",
-          alignItems: "center",
-          textAlign: "center",
+          // border: "1px solid red",
+          padding: 0,
+          margin: 0,
         }}
       >
-        <Container>
+        <Box
+          sx={{
+            height: "100%",
+            width: "100%",
+            flexGrow: 1,
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+            // border: "1px solid violet",
+            margin: 0,
+          }}
+        >
           <Outlet /> {/* This is where the nested routes will be rendered */}
-        </Container>
+        </Box>
       </Box>
       <Footer />
     </Box>

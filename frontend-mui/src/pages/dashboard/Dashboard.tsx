@@ -3,6 +3,7 @@ import {
   Box,
   Card,
   CircularProgress,
+  Container,
   Grid,
   Typography,
 } from "@mui/material";
@@ -63,14 +64,15 @@ export default function Dashboard() {
   }, [user, nav]);
 
   return (
-    <Box
+    <Container
       sx={{
-        padding: 4,
+        padding: 3.5,
         display: "flex",
         flexDirection: "column",
-        height: "80vh",
-        mt: "calc(100px + var(--template-frame-height, 0px))",
+        textAlign: "center",
+        height: "100%",
         overflow: "auto",
+        // border: "1px solid red",
       }}
     >
       {isLoading ? (
@@ -178,6 +180,6 @@ export default function Dashboard() {
           </Grid>
         </>
       )}
-    </Box>
+    </Container>
   );
 }

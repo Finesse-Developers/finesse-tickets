@@ -1,4 +1,4 @@
-import { Avatar, Box, Typography } from "@mui/material";
+import { Avatar, Box, Container, Typography } from "@mui/material";
 import { GitHub } from "@mui/icons-material";
 import Discord_icon from "/dc-icon.svg";
 import { Link } from "react-router-dom";
@@ -14,40 +14,50 @@ const LinkStyle = {
 export default function Footer() {
   return (
     <Box
+      component="footer"
       sx={{
         backgroundColor: "#2b343d",
-        ...LinkStyle,
-        gap: 20,
-        padding: 1,
+        py: 2,
+        mt: "auto", // Pushes footer to the bottom when content is short
       }}
     >
-      <Link
-        to={"https://discord.gg/dvUsZ9Gj2m"}
-        style={{
-          ...LinkStyle,
+      <Container
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 4,
         }}
       >
-        <Avatar
-          src={Discord_icon}
-          sx={{
-            "& img": {
-              filter: "invert(100%)", // Inverts the image color to white
-            },
-            width: "30px",
-            height: "30px",
-          }}
-        />
-        <Typography color="white">Join our Discord Server!</Typography>
-      </Link>
-      <Link
-        to={"https://github.com/Finesse-Developers"}
-        style={{
-          ...LinkStyle,
-        }}
-      >
-        <GitHub sx={{ color: "white" }} />
-        <Typography color="white">Check out our GitHub!</Typography>
-      </Link>
+        <Link
+          to={"https://discord.gg/dvUsZ9Gj2m"}
+          style={LinkStyle}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Avatar
+            src={Discord_icon}
+            sx={{
+              width: 30,
+              height: 30,
+              "& img": {
+                filter: "invert(100%)",
+              },
+            }}
+          />
+          <Typography color="white">Join our Discord Server!</Typography>
+        </Link>
+        <Link
+          to={"https://github.com/Finesse-Developers"}
+          style={LinkStyle}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <GitHub sx={{ color: "white" }} />
+          <Typography color="white">Check out our GitHub!</Typography>
+        </Link>
+      </Container>
     </Box>
   );
 }

@@ -2,6 +2,7 @@ import { Response } from "express";
 import UserModel from "../models/User.model";
 import { client } from "../bot";
 import { CustomRequest, UserGuildDataType } from "./auth.controller";
+import DiscordServerModel from "../models/DiscordServer.model";
 
 export const getAdminServers = async (
   req: CustomRequest,
@@ -63,4 +64,35 @@ export const getAdminServers = async (
     console.error("Error fetching admin servers:", error);
     res.status(500).json({ error: "Internal server error" });
   }
+};
+
+export const fetchServer = async (req: CustomRequest, res: Response) => {
+  const { id } = req.params;
+
+  const clientGuild = client.guilds.cache.get(id);
+  if (!clientGuild) {
+    res
+      .status(404)
+      .json({ error: "Server not found, add the bot in your discord server" });
+    return;
+  }
+
+  const existingDiscordServer = await DiscordServerModel.findOne({
+    serverId: id,
+  });
+  if (!existingDiscordServer) {
+    const newDiscordServer = await DiscordServerModel.create({
+      serverId: id,
+      name: clientGuild.name,
+      icon: clientGuild.icon
+        ? `https://cdn.discordapp.com/icons/${clientGuild.id}/${clientGuild.icon}.png`
+        : null,
+      ticketNameStyle: "number",
+      maxTicketPerUser: 1,
+    });
+    res.json({ discordServer: newDiscordServer });
+    return;
+  }
+  res.json({ discordServer: existingDiscordServer });
+  return;
 };

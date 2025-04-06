@@ -6,7 +6,16 @@ import { useAuth } from "../../context/AuthContext";
 export default function Home() {
   const { user } = useAuth();
   return (
-    <Box>
+    <Box
+      sx={{
+        height: "100%",
+        // border: "1px solid white",
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
       <Typography sx={{ color: "white" }} variant="h2">
         Welcome to Finesse Tickets
       </Typography>

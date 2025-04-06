@@ -3,6 +3,7 @@ import mongoose, { Document, Model } from "mongoose";
 export type DiscordServerType = {
   serverId: string;
   name: string;
+  icon: string | null;
   ticketNameStyle: "name" | "number";
   ticketTranscriptChannelId: string | null;
   maxTicketPerUser: number;
@@ -22,6 +23,7 @@ export interface DiscordServerModel extends Model<DiscordServerDocument> {}
 
 const discordServerSchema = new mongoose.Schema({
   serverId: { type: String, required: true, unique: true },
+  icon: { type: String, default: null },
   name: { type: String, required: true },
   ticketNameStyle: { type: String, enum: ["name", "number"], required: true },
   ticketTranscriptChannelId: { type: String, default: null },
@@ -32,8 +34,8 @@ const discordServerSchema = new mongoose.Schema({
     default: [],
   },
   autoClose: {
-    enabled: { type: Boolean, required: true },
-    closeOnUserLeave: { type: Boolean, required: true },
+    enabled: { type: Boolean, required: true, default: false },
+    closeOnUserLeave: { type: Boolean, required: true, default: false },
     sinceOpenWithNoResponse: { type: Number, default: null },
     sinceLastMessage: { type: Number, default: null },
   },

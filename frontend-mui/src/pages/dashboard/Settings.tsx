@@ -1,16 +1,107 @@
-import { Box } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
+import Sidebar from "../../components/Sidebar";
+import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { redirectToHomeIfNotAuth } from "../../guards/Auth.ProtectedRoutes";
+
+export interface DiscordServerType {
+  serverId: string;
+  name: string;
+  icon: string | null;
+  ticketNameStyle: "name" | "number";
+  ticketTranscriptChannelId: string | null;
+  maxTicketPerUser: number;
+  ticketPermissions: string[];
+  autoClose: {
+    enabled: boolean;
+    closeOnUserLeave: boolean;
+    sinceOpenWithNoResponse: number | null; // seconds
+    sinceLastMessage: number | null; // seconds
+  };
+  transcripts: string[]; // array of closed ticket transcript ids
+  staffMembers: string[]; // array of discord user ids
+}
 
 export default function Settings() {
+  const { id } = useParams();
+  const [discordServer, setDiscordServer] = useState<DiscordServerType | null>(
+    null
+  );
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const nav = useNavigate();
+
+  useEffect(() => {
+    async function fetchServer() {
+      try {
+        setIsLoading(true);
+        setErrorMessage(null);
+        setDiscordServer(null);
+
+        const res = await fetch(
+          `http://localhost:6969/dashboard/fetch-server/${id}`,
+          { credentials: "include" }
+        );
+
+        redirectToHomeIfNotAuth(res, nav);
+
+        if (!res.ok) {
+          setErrorMessage(
+            "Something went wrong in the server, please try again."
+          );
+          return;
+        }
+
+        const data = await res.json();
+        // console.log(data.discordServer);
+
+        setDiscordServer(data.discordServer);
+      } catch (error) {
+        console.error(error);
+        setErrorMessage(
+          "Something went wrong in the server, please try again."
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    if (id) {
+      fetchServer();
+    } else {
+      nav("/dashboard");
+    }
+  }, [id]);
+
+  if (isLoading || !discordServer)
+    return (
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+
   return (
     <Box
       sx={{
-        padding: 4,
         display: "flex",
-        flexDirection: "column",
-        height: "80vh",
-        mt: "calc(100px + var(--template-frame-height, 0px))",
+        height: "100%",
+        width: "100%",
         overflow: "auto",
+        border: "1px solid red",
       }}
-    ></Box>
+    >
+      {errorMessage ? (
+        <Typography variant="h5">{errorMessage}</Typography>
+      ) : (
+        <Sidebar discordServer={discordServer} />
+      )}
+    </Box>
   );
 }
