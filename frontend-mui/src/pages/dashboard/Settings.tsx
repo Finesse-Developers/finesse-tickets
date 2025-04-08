@@ -5,17 +5,28 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
-  InputLabel,
-  MenuItem,
-  Radio,
   RadioGroup,
-  Select,
   SelectChangeEvent,
   Switch,
   TextField,
   Typography,
 } from "@mui/material";
 import { useState } from "react";
+import RadioButtonWithLabel from "../../components/RadioButtonWithLabel";
+import CustomSelect from "../../components/CustomSelect";
+import CustomNumberTextField from "../../components/CustomNumberTextField";
+import CustomSwitch from "../../components/CustomSwitch";
+import CustomCheckbox from "../../components/CustomCheckbox";
+import CustomNumberTextField2 from "../../components/CustomNumberTextField2";
+
+const ticketTranscriptTemporaryChoices = [
+  { name: "Please select transcript channel", value: "", disabled: true },
+  { name: "None", value: "none", disabled: false },
+  { name: "Dev Logs", value: "1", disabled: false },
+  { name: "Admin Logs", value: "2", disabled: false },
+  { name: "Mod Logs", value: "3", disabled: false },
+  { name: "Ticket Transcripts", value: "4", disabled: false },
+];
 
 export default function Settings() {
   const [ticketNameStyle, setTicketNameStyle] = useState<string>("number");
@@ -116,47 +127,10 @@ export default function Settings() {
           value={ticketNameStyle}
           onChange={handleRadioChange}
         >
-          <FormControlLabel
-            value="number"
-            control={
-              <Radio
-                sx={{
-                  color: "white",
-                  "&.Mui-checked": {
-                    color: "white",
-                  },
-                  "&:hover": {
-                    backgroundColor: "transparent",
-                  },
-                }}
-              />
-            }
-            label={
-              <Typography sx={{ color: "white" }}>
-                By Number (#ticket-0)
-              </Typography>
-            }
-          />
-          <FormControlLabel
+          <RadioButtonWithLabel value="number" label="By Number (#ticket-0)" />
+          <RadioButtonWithLabel
             value="name"
-            control={
-              <Radio
-                sx={{
-                  color: "white",
-                  "&.Mui-checked": {
-                    color: "white",
-                  },
-                  "&:hover": {
-                    backgroundColor: "transparent",
-                  },
-                }}
-              />
-            }
-            label={
-              <Typography sx={{ color: "white" }}>
-                By Name (#ticket-sush1sui)
-              </Typography>
-            }
+            label="By Name (#ticket-sush1sui)"
           />
         </RadioGroup>
       </FormControl>
@@ -175,35 +149,12 @@ export default function Settings() {
           Ticket transcript channel
         </FormLabel>
 
-        <Select
+        <CustomSelect
           id="ticketTranscriptChannelId"
           value={ticketTranscriptChannelId}
-          onChange={handleSelectChange}
-          displayEmpty
-          sx={{
-            color: "white",
-            ".MuiOutlinedInput-notchedOutline": {
-              borderColor: "white",
-            },
-            "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "white",
-            },
-            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "white",
-            },
-            ".MuiSvgIcon-root": {
-              color: "white",
-            },
-          }}
-        >
-          <MenuItem value="" disabled>
-            <em>Please select transcript channel</em>
-          </MenuItem>
-          <MenuItem value="none">None</MenuItem>
-          <MenuItem value="1">Dev logs</MenuItem>
-          <MenuItem value="2">Mod logs</MenuItem>
-          <MenuItem value="3">Admin logs</MenuItem>
-        </Select>
+          handleSelectChange={handleSelectChange}
+          items={ticketTranscriptTemporaryChoices}
+        />
       </FormControl>
       <FormControl sx={{ margin: 1.5, marginLeft: 5 }}>
         <FormLabel
@@ -219,38 +170,11 @@ export default function Settings() {
           Max ticket per user
         </FormLabel>
 
-        <TextField
+        <CustomNumberTextField
           id="maxTicketPerUser"
           label="Max ticket per user"
-          type="number"
-          variant="outlined"
-          slotProps={{
-            inputLabel: {
-              shrink: true,
-            },
-          }}
           value={maxTicketPerUser}
-          onChange={handleTextFieldChange}
-          sx={{
-            color: "white",
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                borderColor: "white", // Outline color
-              },
-              "&:hover fieldset": {
-                borderColor: "white", // Hover outline color
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "white", // Focused outline color
-              },
-              "& input": {
-                color: "white", // Text color inside the input
-              },
-            },
-            "& .MuiInputLabel-root": {
-              color: "white", // Label color when not focused
-            },
-          }}
+          handleTextFieldChange={handleTextFieldChange}
         />
       </FormControl>
       <br />
@@ -264,93 +188,23 @@ export default function Settings() {
         </Typography>
 
         <Box display={"flex"} gap={5}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={attachFiles}
-                onChange={(e) => handleSwitchChange(e, setAttachFiles)}
-                sx={{
-                  color: "white", // Default color
-                  "&.Mui-checked": {
-                    color: "white", // Color of the thumb when checked
-                  },
-                  "& .MuiSwitch-track": {
-                    backgroundColor: "#fff", // Track color when not checked
-                  },
-                  "& .MuiSwitch-thumb": {
-                    backgroundColor: "#fff", // Thumb color when checked
-                  },
-                  "&.Mui-checked .MuiSwitch-thumb": {
-                    backgroundColor: "#fff", // Thumb color when checked
-                  },
-                }}
-              />
-            }
-            label={
-              <Typography
-                sx={{
-                  color: "white", // Default color
-                }}
-              >
-                Attach Files
-              </Typography>
-            }
+          <CustomSwitch
+            checked={attachFiles}
+            handleSwitchChange={handleSwitchChange}
+            stateAction={setAttachFiles}
+            label="Attach Files"
           />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={embedLinks}
-                onChange={(e) => handleSwitchChange(e, setEmbedLinks)}
-                sx={{
-                  color: "white", // Default color
-                  "&.Mui-checked": {
-                    color: "white", // Color of the thumb when checked
-                  },
-                  "& .MuiSwitch-track": {
-                    backgroundColor: "#fff", // Track color when not checked
-                  },
-                  "& .MuiSwitch-thumb": {
-                    backgroundColor: "#fff", // Thumb color when checked
-                  },
-                  "&.Mui-checked .MuiSwitch-thumb": {
-                    backgroundColor: "#fff", // Thumb color when checked
-                  },
-                }}
-              />
-            }
-            label={<Typography sx={{ color: "white" }}>Embed Links</Typography>}
+          <CustomSwitch
+            checked={embedLinks}
+            handleSwitchChange={handleSwitchChange}
+            stateAction={setEmbedLinks}
+            label="Embed Links"
           />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={addReactions}
-                onChange={(e) => handleSwitchChange(e, setAddReactions)}
-                sx={{
-                  color: "white", // Default color
-                  "&.Mui-checked": {
-                    color: "white", // Color of the thumb when checked
-                  },
-                  "& .MuiSwitch-track": {
-                    backgroundColor: "#fff", // Track color when not checked
-                  },
-                  "& .MuiSwitch-thumb": {
-                    backgroundColor: "#fff", // Thumb color when checked
-                  },
-                  "&.Mui-checked .MuiSwitch-thumb": {
-                    backgroundColor: "#fff", // Thumb color when checked
-                  },
-                }}
-              />
-            }
-            label={
-              <Typography
-                sx={{
-                  color: "white", // Default color
-                }}
-              >
-                Add Reactions
-              </Typography>
-            }
+          <CustomSwitch
+            checked={addReactions}
+            handleSwitchChange={handleSwitchChange}
+            stateAction={setAddReactions}
+            label="Add Reactions"
           />
         </Box>
       </FormGroup>
@@ -364,41 +218,15 @@ export default function Settings() {
           Auto Close
         </Typography>
         <Box display={"flex"} gap={5}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={autoCloseEnabled}
-                onChange={(e) => setAutoCloseEnabled(e.target.checked)}
-                sx={{
-                  color: "white",
-                  "&.Mui-checked": {
-                    color: "white",
-                  },
-                  "& .MuiSwitch-thumb": {
-                    backgroundColor: "#fff",
-                  },
-                }}
-              />
-            }
+          <CustomCheckbox
             label="Enabled"
+            checked={autoCloseEnabled}
+            stateAction={setAutoCloseEnabled}
           />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={closeWhenUserLeaves}
-                onChange={(e) => setCloseWhenUserLeaves(e.target.checked)}
-                sx={{
-                  color: "white",
-                  "&.Mui-checked": {
-                    color: "white",
-                  },
-                  "& .MuiSwitch-thumb": {
-                    backgroundColor: "#fff",
-                  },
-                }}
-              />
-            }
+          <CustomCheckbox
             label="Close when user leave"
+            checked={closeWhenUserLeaves}
+            stateAction={setCloseWhenUserLeaves}
           />
         </Box>
       </FormGroup>
@@ -422,107 +250,23 @@ export default function Settings() {
           </Typography>
 
           <Box display={"flex"} gap={2}>
-            <TextField
-              value={openNoResponseDays}
-              onChange={(e) => setOpenNoResponseDays(Number(e.target.value))}
+            <CustomNumberTextField2
               id="openNoResponseDAY"
               label="Day"
-              type="number"
-              variant="filled" // Changed to filled to remove the outline
-              slotProps={{
-                inputLabel: {
-                  shrink: true,
-                },
-              }}
-              sx={{
-                width: "120px",
-                color: "white",
-                "& .MuiFilledInput-root": {
-                  backgroundColor: "transparent", // No background color (box effect)
-                  border: "1px solid white", // Add border to make it appear as a box
-                  borderRadius: "4px", // Optional: adjust border radius to make it look like a box
-                },
-                "& .MuiFilledInput-input": {
-                  color: "white", // Input text color
-                },
-                "& .MuiInputLabel-root": {
-                  color: "white", // Label color
-                },
-                "& .MuiInputBase-root:hover": {
-                  borderColor: "white", // Border color on hover
-                },
-                "&.Mui-focused .MuiFilledInput-root": {
-                  borderColor: "white", // Border color when focused
-                },
-              }}
+              stateAction={setOpenNoResponseDays}
+              value={openNoResponseDays}
             />
-            <TextField
-              value={openNoResponseHours}
-              onChange={(e) => setOpenNoResponseHours(Number(e.target.value))}
+            <CustomNumberTextField2
               id="openNoResponseHOUR"
               label="Hour"
-              type="number"
-              variant="filled" // Changed to filled to remove the outline
-              slotProps={{
-                inputLabel: {
-                  shrink: true,
-                },
-              }}
-              sx={{
-                width: "120px",
-                color: "white",
-                "& .MuiFilledInput-root": {
-                  backgroundColor: "transparent",
-                  border: "1px solid white",
-                  borderRadius: "4px",
-                },
-                "& .MuiFilledInput-input": {
-                  color: "white",
-                },
-                "& .MuiInputLabel-root": {
-                  color: "white",
-                },
-                "& .MuiInputBase-root:hover": {
-                  borderColor: "white",
-                },
-                "&.Mui-focused .MuiFilledInput-root": {
-                  borderColor: "white",
-                },
-              }}
+              stateAction={setOpenNoResponseHours}
+              value={openNoResponseHours}
             />
-            <TextField
-              value={openNoResponseMinutes}
-              onChange={(e) => setOpenNoResponseMinutes(Number(e.target.value))}
+            <CustomNumberTextField2
               id="openNoResponseMIN"
               label="Min"
-              type="number"
-              variant="filled" // Changed to filled to remove the outline
-              slotProps={{
-                inputLabel: {
-                  shrink: true,
-                },
-              }}
-              sx={{
-                width: "120px",
-                color: "white",
-                "& .MuiFilledInput-root": {
-                  backgroundColor: "transparent",
-                  border: "1px solid white",
-                  borderRadius: "4px",
-                },
-                "& .MuiFilledInput-input": {
-                  color: "white",
-                },
-                "& .MuiInputLabel-root": {
-                  color: "white",
-                },
-                "& .MuiInputBase-root:hover": {
-                  borderColor: "white",
-                },
-                "&.Mui-focused .MuiFilledInput-root": {
-                  borderColor: "white",
-                },
-              }}
+              stateAction={setOpenNoResponseMinutes}
+              value={openNoResponseMinutes}
             />
           </Box>
         </FormControl>
@@ -537,109 +281,23 @@ export default function Settings() {
           </Typography>
 
           <Box display={"flex"} gap={2}>
-            <TextField
+            <CustomNumberTextField2
               value={sinceLastMessageDays}
-              onChange={(e) => setSinceLastMessageDays(Number(e.target.value))}
+              stateAction={setSinceLastMessageDays}
               id="sinceLastMessageDAY"
               label="Day"
-              type="number"
-              variant="filled" // Changed to filled to remove the outline
-              slotProps={{
-                inputLabel: {
-                  shrink: true,
-                },
-              }}
-              sx={{
-                width: "120px",
-                color: "white",
-                "& .MuiFilledInput-root": {
-                  backgroundColor: "transparent", // No background color (box effect)
-                  border: "1px solid white", // Add border to make it appear as a box
-                  borderRadius: "4px", // Optional: adjust border radius to make it look like a box
-                },
-                "& .MuiFilledInput-input": {
-                  color: "white", // Input text color
-                },
-                "& .MuiInputLabel-root": {
-                  color: "white", // Label color
-                },
-                "& .MuiInputBase-root:hover": {
-                  borderColor: "white", // Border color on hover
-                },
-                "&.Mui-focused .MuiFilledInput-root": {
-                  borderColor: "white", // Border color when focused
-                },
-              }}
             />
-            <TextField
+            <CustomNumberTextField2
               value={sinceLastMessageHours}
-              onChange={(e) => setSinceLastMessageHours(Number(e.target.value))}
+              stateAction={setSinceLastMessageHours}
               id="sinceLastMessageHOUR"
               label="Hour"
-              type="number"
-              variant="filled" // Changed to filled to remove the outline
-              slotProps={{
-                inputLabel: {
-                  shrink: true,
-                },
-              }}
-              sx={{
-                width: "120px",
-                color: "white",
-                "& .MuiFilledInput-root": {
-                  backgroundColor: "transparent",
-                  border: "1px solid white",
-                  borderRadius: "4px",
-                },
-                "& .MuiFilledInput-input": {
-                  color: "white",
-                },
-                "& .MuiInputLabel-root": {
-                  color: "white",
-                },
-                "& .MuiInputBase-root:hover": {
-                  borderColor: "white",
-                },
-                "&.Mui-focused .MuiFilledInput-root": {
-                  borderColor: "white",
-                },
-              }}
             />
-            <TextField
+            <CustomNumberTextField2
               value={sinceLastMessageMinutes}
-              onChange={(e) =>
-                setSinceLastMessageMinutes(Number(e.target.value))
-              }
+              stateAction={setSinceLastMessageMinutes}
               id="sinceLastMessageMIN"
               label="Min"
-              type="number"
-              variant="filled" // Changed to filled to remove the outline
-              slotProps={{
-                inputLabel: {
-                  shrink: true,
-                },
-              }}
-              sx={{
-                width: "120px",
-                color: "white",
-                "& .MuiFilledInput-root": {
-                  backgroundColor: "transparent",
-                  border: "1px solid white",
-                  borderRadius: "4px",
-                },
-                "& .MuiFilledInput-input": {
-                  color: "white",
-                },
-                "& .MuiInputLabel-root": {
-                  color: "white",
-                },
-                "& .MuiInputBase-root:hover": {
-                  borderColor: "white",
-                },
-                "&.Mui-focused .MuiFilledInput-root": {
-                  borderColor: "white",
-                },
-              }}
             />
           </Box>
         </FormControl>
