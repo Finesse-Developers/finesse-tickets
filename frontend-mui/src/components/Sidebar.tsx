@@ -14,7 +14,9 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import DescriptionIcon from "@mui/icons-material/Description";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import GroupIcon from "@mui/icons-material/Group";
-import { DiscordServerType } from "../pages/dashboard/Settings";
+import { DiscordServerType } from "../pages/dashboard/Dashboard";
+import { Link } from "react-router-dom";
+import { useMemo } from "react";
 
 const hoverStyle = {
   color: "white",
@@ -28,28 +30,52 @@ const hoverStyle = {
 };
 
 const Sidebar = ({ discordServer }: { discordServer: DiscordServerType }) => {
+  const links = useMemo(
+    () => [
+      { name: "Back to servers", link: "/dashboard", icon: <ArrowBackIcon /> },
+      {
+        name: "Settings",
+        link: `/dashboard/${discordServer.serverId}`,
+        icon: <SettingsIcon />,
+      },
+      {
+        name: "Transcripts",
+        link: `/dashboard/${discordServer.serverId}/transcripts`,
+        icon: <DescriptionIcon />,
+      },
+      {
+        name: "Ticket Panels",
+        link: `/dashboard/${discordServer.serverId}/panel`,
+        icon: <ViewListIcon />,
+      },
+      {
+        name: "Staff Members",
+        link: `/dashboard/${discordServer.serverId}/staffs`,
+        icon: <GroupIcon />,
+      },
+    ],
+    [discordServer.serverId]
+  );
+
   return (
-    <Drawer
-      variant="permanent"
+    <Box
       sx={{
         width: 260,
-        flexShrink: 0,
-        "& .MuiDrawer-paper": {
-          width: 260,
-          boxSizing: "border-box",
-          borderRadius: 2,
-          border: "2px solid white",
-          backgroundColor: "transparent",
-          color: "white",
-          height: "auto",
-        },
+        boxSizing: "border-box",
+        borderRadius: 2,
+        border: "2px solid white",
+        backgroundColor: "transparent",
+        color: "white",
+        alignSelf: "flex-start",
+        marginLeft: 5,
+        marginTop: 1.5,
       }}
     >
       {/* Server Info */}
       <Box
         display="flex"
         alignItems="center"
-        gap={2}
+        gap={3}
         border="2px solid white"
         borderRadius={2}
         padding={1.5}
@@ -62,70 +88,48 @@ const Sidebar = ({ discordServer }: { discordServer: DiscordServerType }) => {
             src={discordServer.icon}
             alt={discordServer.name}
             sx={{
-              borderRadius: "20px",
-              width: "100px",
-              height: "100px",
-              margin: "0 auto",
+              borderRadius: 1,
+              width: "50px",
+              height: "50px",
               objectFit: "cover",
             }}
           />
         ) : (
           <Avatar
             sx={{
-              width: 100,
-              height: 100,
+              width: 50,
+              height: 50,
               backgroundColor: "gray",
-              margin: "0 auto",
             }}
           >
             <Typography variant="h4">
-              {discordServer.name.charAt(0).toUpperCase()}
+              {discordServer.name?.trim()?.charAt(0)?.toUpperCase() || "?"}
             </Typography>
           </Avatar>
         )}
-        <Typography fontWeight={600} fontSize="1.1rem">
-          {discordServer.name}
+        <Typography fontWeight={600} fontSize={12}>
+          {discordServer.name.length > 21
+            ? `${discordServer.name.slice(0, 21)}...`
+            : discordServer.name}
         </Typography>
       </Box>
 
       {/* Menu Items */}
       <List>
-        <ListItemButton sx={hoverStyle}>
-          <ListItemIcon>
-            <ArrowBackIcon />
-          </ListItemIcon>
-          <ListItemText primary="Back to servers" />
-        </ListItemButton>
-
-        <ListItemButton sx={hoverStyle}>
-          <ListItemIcon>
-            <SettingsIcon />
-          </ListItemIcon>
-          <ListItemText primary="Settings" />
-        </ListItemButton>
-
-        <ListItemButton sx={hoverStyle}>
-          <ListItemIcon>
-            <DescriptionIcon />
-          </ListItemIcon>
-          <ListItemText primary="Transcripts" />
-        </ListItemButton>
-
-        <ListItemButton sx={hoverStyle}>
-          <ListItemIcon>
-            <ViewListIcon />
-          </ListItemIcon>
-          <ListItemText primary="Ticket Panels" />
-        </ListItemButton>
-
-        <ListItemButton sx={{ ...hoverStyle, marginBottom: 2 }}>
-          <ListItemIcon>
-            <GroupIcon />
-          </ListItemIcon>
-          <ListItemText primary="Staff Members" />
-        </ListItemButton>
+        {links.map((link) => (
+          <Link
+            key={link.name}
+            to={link.link}
+            style={{ textDecoration: "none" }}
+          >
+            <ListItemButton sx={hoverStyle}>
+              <ListItemIcon>{link.icon}</ListItemIcon>
+              <ListItemText primary={link.name} />
+            </ListItemButton>
+          </Link>
+        ))}
       </List>
-    </Drawer>
+    </Box>
   );
 };
 

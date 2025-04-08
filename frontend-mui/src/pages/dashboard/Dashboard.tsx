@@ -1,185 +1,125 @@
-import {
-  Avatar,
-  Box,
-  Card,
-  CircularProgress,
-  Container,
-  Grid,
-  Typography,
-} from "@mui/material";
-import { useEffect, useRef, useState } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { Link, useNavigate } from "react-router-dom";
-import { PlainButton } from "../../components/PlainButton";
+import { Box, CircularProgress, Typography } from "@mui/material";
+import Sidebar from "../../components/Sidebar";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { redirectToHomeIfNotAuth } from "../../guards/Auth.ProtectedRoutes";
 
-type AdminServerType = {
-  id: string;
-  icon: string | null;
+export interface DiscordServerType {
+  serverId: string;
   name: string;
-};
+  icon: string | null;
+  ticketNameStyle: "name" | "number";
+  ticketTranscriptChannelId: string | null;
+  maxTicketPerUser: number;
+  ticketPermissions: string[];
+  autoClose: {
+    enabled: boolean;
+    closeOnUserLeave: boolean;
+    sinceOpenWithNoResponse: number | null; // seconds
+    sinceLastMessage: number | null; // seconds
+  };
+  transcripts: string[]; // array of closed ticket transcript ids
+  staffMembers: string[]; // array of discord user ids
+}
 
 export default function Dashboard() {
-  const { user } = useAuth();
-  const hasFetchedRef = useRef(false);
-  const [adminServers, setAdminServers] = useState<AdminServerType[]>([]);
+  const { id } = useParams();
+  const [discordServer, setDiscordServer] = useState<DiscordServerType | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [dashboardMessage, setDashboardMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const nav = useNavigate();
 
   useEffect(() => {
-    if (hasFetchedRef.current) return; // Prevent double fetching
-    hasFetchedRef.current = true;
-
-    const fetchAdminServers = async () => {
-      setIsLoading(true);
-      setDashboardMessage(null);
+    async function fetchServer() {
       try {
-        const res = await fetch(`http://localhost:6969/dashboard`, {
-          credentials: "include",
-        });
+        setIsLoading(true);
+        setErrorMessage(null);
+        setDiscordServer(null);
+
+        const res = await fetch(
+          `http://localhost:6969/dashboard/fetch-server/${id}`,
+          { credentials: "include" }
+        );
 
         redirectToHomeIfNotAuth(res, nav);
 
-        const data = await res.json();
-        if ((data as AdminServerType[]).length <= 0)
-          setDashboardMessage(
-            "No servers found, please invite the bot on your discord server."
+        if (!res.ok) {
+          setErrorMessage(
+            "Something went wrong in the server, please try again."
           );
-        setAdminServers(data);
+          return;
+        }
+
+        const data = await res.json();
+        // console.log(data.discordServer);
+
+        setDiscordServer(data.discordServer);
       } catch (error) {
-        console.log(error);
-        setDashboardMessage(
-          "Something went wrong fetching discord servers, please try again or contact support in our discord server."
+        console.error(error);
+        setErrorMessage(
+          "Something went wrong in the server, please try again."
         );
       } finally {
         setIsLoading(false);
       }
-    };
-    if (user) {
-      fetchAdminServers();
-    } else {
-      nav("/");
     }
-  }, [user, nav]);
+
+    if (id && id !== undefined) {
+      fetchServer();
+    } else {
+      nav("/dashboard");
+    }
+  }, [id]);
+
+  if (!id) nav("/dashboard");
+
+  if (isLoading || !discordServer) {
+    return (
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (errorMessage) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          width: "100%",
+        }}
+      >
+        <Typography variant="h5" color="white">
+          {errorMessage}
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
-    <Container
+    <Box
       sx={{
-        padding: 3.5,
         display: "flex",
-        flexDirection: "column",
-        textAlign: "center",
         height: "100%",
+        width: "100%",
         overflow: "auto",
-        // border: "1px solid red",
+        border: "1px solid red",
       }}
     >
-      {isLoading ? (
-        <Box
-          sx={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      ) : (
-        <>
-          <Link
-            to={
-              "https://discord.com/oauth2/authorize?client_id=1354785979843608637&scope=bot&permissions=8"
-            }
-            target="_blank"
-            style={{
-              marginBottom: 20,
-              textDecoration: "none",
-              alignSelf: "flex-end",
-            }}
-          >
-            <PlainButton>+ Add Server</PlainButton>
-          </Link>
-          <Grid
-            container
-            spacing={2}
-            sx={{ display: "flex", flexWrap: "wrap" }}
-          >
-            {dashboardMessage ? (
-              <Box
-                sx={{
-                  flex: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "white",
-                  minHeight: "300px",
-                }}
-              >
-                <Typography variant="h5" width={250}>
-                  {dashboardMessage}
-                </Typography>
-              </Box>
-            ) : (
-              adminServers.map((server) => (
-                <Card
-                  sx={{
-                    width: 150,
-                    backgroundColor: "transparent",
-                    padding: "10px",
-                    cursor: "pointer",
-                    ":hover": {
-                      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
-                    },
-                  }}
-                  elevation={0}
-                  key={server.id}
-                >
-                  <Link
-                    to={`/dashboard/${server.id}`}
-                    style={{ textDecoration: "none" }}
-                  >
-                    {server.icon ? (
-                      <Box
-                        component="img"
-                        src={server.icon}
-                        alt={server.name}
-                        sx={{
-                          borderRadius: "20px",
-                          width: "100px",
-                          height: "100px",
-                          margin: "0 auto",
-                          objectFit: "cover",
-                        }}
-                      />
-                    ) : (
-                      <Avatar
-                        sx={{
-                          width: 100,
-                          height: 100,
-                          backgroundColor: "gray",
-                          margin: "0 auto",
-                        }}
-                      >
-                        <Typography variant="h4">
-                          {server.name.charAt(0).toUpperCase()}
-                        </Typography>
-                      </Avatar>
-                    )}
-                    <Typography
-                      variant="h6"
-                      sx={{ marginTop: 1, fontSize: "14px", color: "white" }}
-                    >
-                      {server.name}
-                    </Typography>
-                  </Link>
-                </Card>
-              ))
-            )}
-          </Grid>
-        </>
-      )}
-    </Container>
+      <Sidebar discordServer={discordServer} />
+      <Outlet />
+    </Box>
   );
 }

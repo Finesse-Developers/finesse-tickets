@@ -1,10 +1,11 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import AppLayout from "./layout/AppLayout";
+import AuthProtectedRoutes from "./guards/Auth.ProtectedRoutes";
 
 // pages
 import Home from "./pages/home/Home";
+import DashboardServers from "./pages/dashboard/DashboardServers";
 import Dashboard from "./pages/dashboard/Dashboard";
-import AppLayout from "./layout/AppLayout";
-import AuthProtectedRoutes from "./guards/Auth.ProtectedRoutes";
 import Settings from "./pages/dashboard/Settings";
 
 function App() {
@@ -17,8 +18,10 @@ function App() {
 
             {/* Protected Routes for logged in users */}
             <Route element={<AuthProtectedRoutes />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/dashboard/:id" element={<Settings />} />
+              <Route path="/dashboard" element={<DashboardServers />} />
+              <Route path="/dashboard/:id" element={<Dashboard />}>
+                <Route index element={<Settings />} />
+              </Route>
             </Route>
           </Route>
         </Routes>

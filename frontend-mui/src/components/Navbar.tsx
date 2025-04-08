@@ -26,7 +26,7 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 }));
 
 export default function Navbar() {
-  const { user, login, logout } = useAuth();
+  const { user, logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleMenuOpen = (event: MouseEvent<HTMLDivElement>) => {
@@ -53,7 +53,7 @@ export default function Navbar() {
         mt: "calc(var(--template-frame-height, 0px) + 28px)",
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         <StyledToolbar variant="dense" disableGutters>
           <Box
             sx={{ flexGrow: 1, display: "flex", alignItems: "center", px: 0 }}
