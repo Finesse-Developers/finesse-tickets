@@ -15,6 +15,7 @@ import CustomSwitch from "../../components/CustomSwitch";
 import CustomCheckbox from "../../components/CustomCheckbox";
 import CustomNumberTextField2 from "../../components/CustomNumberTextField2";
 import { PlainButton } from "../../components/PlainButton";
+import { useParams } from "react-router-dom";
 
 const ticketTranscriptTemporaryChoices = [
   { name: "Please select transcript channel", value: "", disabled: true },
@@ -26,6 +27,7 @@ const ticketTranscriptTemporaryChoices = [
 ];
 
 export default function Settings() {
+  const { id } = useParams();
   const [ticketNameStyle, setTicketNameStyle] = useState<string>("number");
   const [ticketTranscriptChannelId, setTicketTranscriptChannelId] =
     useState<string>("");
@@ -78,6 +80,50 @@ export default function Settings() {
 
   const handleSelectChange = (event: SelectChangeEvent) => {
     setTicketTranscriptChannelId(event.target.value as string);
+  };
+
+  const handleSave = async () => {
+    const serverSettings = {
+      ticketNameStyle,
+      ticketTranscriptChannelId,
+      maxTicketPerUser,
+      attachFiles,
+      embedLinks,
+      addReactions,
+      autoCloseEnabled,
+      closeWhenUserLeaves,
+      openNoResponseDays,
+      openNoResponseHours,
+      openNoResponseMinutes,
+      sinceLastMessageDays,
+      sinceLastMessageHours,
+      sinceLastMessageMinutes,
+    };
+
+    try {
+      const res = await fetch(
+        `http://localhost:6969/dashboard/update-server/${id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(serverSettings),
+          credentials: "include",
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to update server settings");
+      }
+
+      const data = await res.json();
+      // Handle success, e.g., show a success message
+      console.log("Settings updated successfully!");
+      console.log(data);
+    } catch (error) {
+      console.error("Error updating settings:", error);
+    }
   };
 
   return (
@@ -308,7 +354,9 @@ export default function Settings() {
           marginTop: 10,
         }}
       >
-        <PlainButton style={{ width: "80%" }}>SAVE</PlainButton>
+        <PlainButton style={{ width: "80%" }} onClick={handleSave}>
+          SAVE
+        </PlainButton>
       </Box>
     </Box>
   );

@@ -2,6 +2,7 @@ import { RequestHandler, Router } from "express";
 import {
   fetchServer,
   getAdminServers,
+  updateServer,
 } from "../controllers/dashboard.controller";
 import { isAuthenticated } from "../middleware/auth.middleware";
 
@@ -16,6 +17,11 @@ router.get(
   "/fetch-server/:id",
   isAuthenticated as RequestHandler,
   fetchServer as RequestHandler
+);
+router.post(
+  "/update-server/:id",
+  isAuthenticated as RequestHandler,
+  updateServer as RequestHandler
 );
 
 export default router;
