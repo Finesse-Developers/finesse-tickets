@@ -21,7 +21,7 @@ export type AdminServerType = {
 };
 
 export default function DashboardServers() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const hasFetchedRef = useRef(false);
   const [adminServers, setAdminServers] = useState<AdminServerType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -57,14 +57,16 @@ export default function DashboardServers() {
         setIsLoading(false);
       }
     };
-    if (user) {
-      fetchAdminServers();
-    } else {
-      nav("/");
+    if (!loading) {
+      if (user) {
+        fetchAdminServers();
+      } else {
+        nav("/"); // Redirect to home if user is not logged in
+      }
     }
-  }, [user, nav]);
+  }, [user, nav, loading]);
 
-  if (isLoading)
+  if (isLoading || loading)
     return (
       <Box
         sx={{

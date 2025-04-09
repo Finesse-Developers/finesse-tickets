@@ -1,14 +1,10 @@
 import {
   Box,
-  Checkbox,
   FormControl,
-  FormControlLabel,
   FormGroup,
   FormLabel,
   RadioGroup,
   SelectChangeEvent,
-  Switch,
-  TextField,
   Typography,
 } from "@mui/material";
 import { useState } from "react";
@@ -18,6 +14,7 @@ import CustomNumberTextField from "../../components/CustomNumberTextField";
 import CustomSwitch from "../../components/CustomSwitch";
 import CustomCheckbox from "../../components/CustomCheckbox";
 import CustomNumberTextField2 from "../../components/CustomNumberTextField2";
+import { PlainButton } from "../../components/PlainButton";
 
 const ticketTranscriptTemporaryChoices = [
   { name: "Please select transcript channel", value: "", disabled: true },
@@ -302,6 +299,17 @@ export default function Settings() {
           </Box>
         </FormControl>
       </FormGroup>
+      <Box
+        sx={{
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginTop: 10,
+        }}
+      >
+        <PlainButton style={{ width: "80%" }}>SAVE</PlainButton>
+      </Box>
     </Box>
   );
 }

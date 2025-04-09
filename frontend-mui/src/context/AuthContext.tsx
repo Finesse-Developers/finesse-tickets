@@ -17,6 +17,7 @@ interface AuthContextType {
   user: AuthUserType | null;
   login: (user: AuthUserType) => void;
   logout: () => void;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -31,11 +32,13 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AuthUserType | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // Check session on mount
   useEffect(() => {
     const checkSession = async () => {
       try {
+        setLoading(true);
         // Parallelize the fetch calls
         const [userSessionRes, userRes] = await Promise.all([
           fetch(`http://localhost:6969/auth/check-session`, {
@@ -62,6 +65,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.error("Failed to check session", error);
         setUser(null);
         document.location.href = "/";
+      } finally {
+        setLoading(false);
       }
     };
     checkSession();
@@ -73,20 +78,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     try {
+      document.location.href = "/";
+      setLoading(true);
+
       const res = await fetch(`http://localhost:6969/auth/logout`, {
         method: "post",
         credentials: "include",
       });
 
       if (res.ok) setUser(null);
-      document.location.href = "/";
     } catch (error) {
       console.error("Logout failed", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

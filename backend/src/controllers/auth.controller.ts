@@ -50,7 +50,7 @@ export const discordAuthRedirect = passport.authenticate("discord", {
 
 export const authorizeUser = async (req: CustomRequest, res: Response) => {
   if (!req.session.passport?.user) {
-    res.redirect(`${process.env.FRONTEND_URL}/`);
+    res.redirect("/auth");
     return;
   }
 

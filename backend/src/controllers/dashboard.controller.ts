@@ -57,7 +57,7 @@ export const getAdminServers = async (
           : null,
       }));
 
-    console.log(`Admin servers for user ${user.discordId}:`, mutualAdminGuilds);
+    // console.log(`Admin servers for user ${user.discordId}:`, mutualAdminGuilds);
 
     res.json(mutualAdminGuilds);
   } catch (error) {

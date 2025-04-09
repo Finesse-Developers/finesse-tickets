@@ -27,7 +27,7 @@ export default function Home() {
             </PlainButton>
           </Link>
         )}
-        <Link to={"/dashboard"}>
+        <Link to={`${!user ? "http://localhost:6969/auth" : "/dashboard"}`}>
           <PlainButton>
             <Typography>Dashboard</Typography>
           </PlainButton>
