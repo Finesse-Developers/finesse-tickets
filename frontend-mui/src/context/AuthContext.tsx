@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           const userSession = await userSessionRes.json();
           if (userSession.accessToken && userRes.ok) {
             const data = await userRes.json();
-            console.log(data);
+            // console.log(data);
             setUser(data);
             return;
           }

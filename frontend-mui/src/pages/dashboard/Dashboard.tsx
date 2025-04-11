@@ -1,81 +1,12 @@
 import { Box, CircularProgress, Typography } from "@mui/material";
 import Sidebar from "../../components/Sidebar";
-import { Outlet, useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { redirectToHomeIfNotAuth } from "../../guards/Auth.ProtectedRoutes";
-
-export interface DiscordServerType {
-  serverId: string;
-  name: string;
-  icon: string | null;
-  ticketNameStyle: "name" | "number";
-  ticketTranscriptChannelId: string | null;
-  maxTicketPerUser: number;
-  ticketPermissions: string[];
-  autoClose: {
-    enabled: boolean;
-    closeOnUserLeave: boolean;
-    sinceOpenWithNoResponse: number | null; // seconds
-    sinceLastMessage: number | null; // seconds
-  };
-  transcripts: string[]; // array of closed ticket transcript ids
-  staffMembers: string[]; // array of discord user ids
-}
+import { Outlet } from "react-router-dom";
+import { useDiscordServer } from "../../context/DiscordServerContext";
 
 export default function Dashboard() {
-  const { id } = useParams();
-  const [discordServer, setDiscordServer] = useState<DiscordServerType | null>(
-    null
-  );
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const nav = useNavigate();
+  const { discordServer, loading, error } = useDiscordServer();
 
-  useEffect(() => {
-    async function fetchServer() {
-      try {
-        setIsLoading(true);
-        setErrorMessage(null);
-        setDiscordServer(null);
-
-        const res = await fetch(
-          `http://localhost:6969/dashboard/fetch-server/${id}`,
-          { credentials: "include" }
-        );
-
-        redirectToHomeIfNotAuth(res, nav);
-
-        if (!res.ok) {
-          setErrorMessage(
-            "Something went wrong in the server, please try again."
-          );
-          return;
-        }
-
-        const data = await res.json();
-        // console.log(data.discordServer);
-
-        setDiscordServer(data.discordServer);
-      } catch (error) {
-        console.error(error);
-        setErrorMessage(
-          "Something went wrong in the server, please try again."
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    if (id && id !== undefined) {
-      fetchServer();
-    } else {
-      nav("/dashboard");
-    }
-  }, [id]);
-
-  if (!id) nav("/dashboard");
-
-  if (isLoading || !discordServer) {
+  if (loading || !discordServer) {
     return (
       <Box
         sx={{
@@ -90,7 +21,7 @@ export default function Dashboard() {
     );
   }
 
-  if (errorMessage) {
+  if (error) {
     return (
       <Box
         sx={{
@@ -102,7 +33,7 @@ export default function Dashboard() {
         }}
       >
         <Typography variant="h5" color="white">
-          {errorMessage}
+          {error}
         </Typography>
       </Box>
     );
@@ -115,7 +46,7 @@ export default function Dashboard() {
         height: "100%",
         width: "100%",
         overflow: "auto",
-        border: "1px solid red",
+        // border: "1px solid red",
       }}
     >
       <Sidebar discordServer={discordServer} />

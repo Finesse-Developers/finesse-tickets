@@ -14,7 +14,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import DescriptionIcon from "@mui/icons-material/Description";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import GroupIcon from "@mui/icons-material/Group";
-import { DiscordServerType } from "../pages/dashboard/Dashboard";
+import { DiscordServerType } from "../context/DiscordServerContext";
 import { Link } from "react-router-dom";
 import { useMemo } from "react";
 
