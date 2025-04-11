@@ -20,21 +20,12 @@ import { useParams } from "react-router-dom";
 import { useDiscordServer } from "../../context/DiscordServerContext";
 import { convertToDaysHoursMins } from "../../utils/helper";
 
-const ticketTranscriptTemporaryChoices = [
-  { name: "Please select transcript channel", value: "", disabled: true },
-  { name: "None", value: "none", disabled: false },
-  { name: "Dev Logs", value: "1", disabled: false },
-  { name: "Admin Logs", value: "2", disabled: false },
-  { name: "Mod Logs", value: "3", disabled: false },
-  { name: "Ticket Transcripts", value: "4", disabled: false },
-];
-
 export default function Settings() {
   const { id } = useParams();
-  const { discordServer } = useDiscordServer();
+  const { discordServer, channels } = useDiscordServer();
   const [ticketNameStyle, setTicketNameStyle] = useState<string>("number");
   const [ticketTranscriptChannelId, setTicketTranscriptChannelId] =
-    useState<string>("");
+    useState<string>("none");
   const [maxTicketPerUser, setMaxTicketPerUser] = useState<number | "">("");
   const [attachFiles, setAttachFiles] = useState<boolean>(false);
   const [embedLinks, setEmbedLinks] = useState<boolean>(false);
@@ -58,54 +49,62 @@ export default function Settings() {
   const [sinceLastMessageMinutes, setSinceLastMessageMinutes] = useState<
     number | ""
   >("");
+
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (discordServer && id) {
-      setTicketNameStyle(discordServer.ticketNameStyle);
-      setTicketTranscriptChannelId(
-        discordServer.ticketTranscriptChannelId || ""
-      );
-      setMaxTicketPerUser(discordServer.maxTicketPerUser || 1);
-      setAttachFiles(
-        discordServer.ticketPermissions.includes("ATTACH_FILES") ? true : false
-      );
-      setEmbedLinks(
-        discordServer.ticketPermissions.includes("EMBED_LINKS") ? true : false
-      );
-      setAddReactions(
-        discordServer.ticketPermissions.includes("ADD_REACTIONS") ? true : false
-      );
-      setAutoCloseEnabled(discordServer.autoClose.enabled);
-      setCloseWhenUserLeaves(discordServer.autoClose.closeOnUserLeave);
-
-      if (discordServer.autoClose.sinceOpenWithNoResponse) {
-        const convertedOpenNoResponse = convertToDaysHoursMins(
-          discordServer.autoClose.sinceOpenWithNoResponse
+    async function initializeValues() {
+      if (discordServer && id) {
+        setTicketNameStyle(discordServer.ticketNameStyle);
+        setTicketTranscriptChannelId(
+          discordServer.ticketTranscriptChannelId || "none"
         );
-        setOpenNoResponseDays(convertedOpenNoResponse.days);
-        setOpenNoResponseHours(convertedOpenNoResponse.hours);
-        setOpenNoResponseMinutes(convertedOpenNoResponse.mins);
-      } else {
-        setOpenNoResponseDays("");
-        setOpenNoResponseHours("");
-        setOpenNoResponseMinutes("");
-      }
-
-      if (discordServer.autoClose.sinceLastMessage) {
-        const convertedSinceLastMessage = convertToDaysHoursMins(
-          discordServer.autoClose.sinceLastMessage
+        setMaxTicketPerUser(discordServer.maxTicketPerUser || 1);
+        setAttachFiles(
+          discordServer.ticketPermissions.includes("ATTACH_FILES")
+            ? true
+            : false
         );
+        setEmbedLinks(
+          discordServer.ticketPermissions.includes("EMBED_LINKS") ? true : false
+        );
+        setAddReactions(
+          discordServer.ticketPermissions.includes("ADD_REACTIONS")
+            ? true
+            : false
+        );
+        setAutoCloseEnabled(discordServer.autoClose.enabled);
+        setCloseWhenUserLeaves(discordServer.autoClose.closeOnUserLeave);
 
-        setSinceLastMessageDays(convertedSinceLastMessage.days);
-        setSinceLastMessageHours(convertedSinceLastMessage.hours);
-        setSinceLastMessageMinutes(convertedSinceLastMessage.mins);
-      } else {
-        setSinceLastMessageDays("");
-        setSinceLastMessageHours("");
-        setSinceLastMessageMinutes("");
+        if (discordServer.autoClose.sinceOpenWithNoResponse) {
+          const convertedOpenNoResponse = convertToDaysHoursMins(
+            discordServer.autoClose.sinceOpenWithNoResponse
+          );
+          setOpenNoResponseDays(convertedOpenNoResponse.days);
+          setOpenNoResponseHours(convertedOpenNoResponse.hours);
+          setOpenNoResponseMinutes(convertedOpenNoResponse.mins);
+        } else {
+          setOpenNoResponseDays("");
+          setOpenNoResponseHours("");
+          setOpenNoResponseMinutes("");
+        }
+
+        if (discordServer.autoClose.sinceLastMessage) {
+          const convertedSinceLastMessage = convertToDaysHoursMins(
+            discordServer.autoClose.sinceLastMessage
+          );
+
+          setSinceLastMessageDays(convertedSinceLastMessage.days);
+          setSinceLastMessageHours(convertedSinceLastMessage.hours);
+          setSinceLastMessageMinutes(convertedSinceLastMessage.mins);
+        } else {
+          setSinceLastMessageDays("");
+          setSinceLastMessageHours("");
+          setSinceLastMessageMinutes("");
+        }
       }
     }
+    initializeValues();
   }, [discordServer, id]);
 
   // Handlers to update state when input changes
@@ -253,7 +252,7 @@ export default function Settings() {
           id="ticketTranscriptChannelId"
           value={ticketTranscriptChannelId}
           handleSelectChange={handleSelectChange}
-          items={ticketTranscriptTemporaryChoices}
+          items={channels}
         />
       </FormControl>
       <FormControl sx={{ margin: 1.5, marginLeft: 5 }}>

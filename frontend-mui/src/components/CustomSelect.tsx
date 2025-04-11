@@ -34,7 +34,11 @@ export default function CustomSelect({
           color: "white",
         },
       }}
+      defaultValue="none"
     >
+      <MenuItem value="" disabled={true}>
+        Please select transcript channel
+      </MenuItem>
       {items.map((item, i) => (
         <MenuItem key={i} value={item.value} disabled={item.disabled}>
           {item.name}

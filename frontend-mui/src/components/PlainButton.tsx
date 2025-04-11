@@ -16,4 +16,8 @@ export const PlainButton = styled(Button)(() => ({
   "&:focus": {
     outline: "none", // No outline on focus
   },
+  ":disabled": {
+    backgroundColor: "rgba(255, 255, 255, 0)", // Lighter white for hover
+    color: "white",
+  },
 }));

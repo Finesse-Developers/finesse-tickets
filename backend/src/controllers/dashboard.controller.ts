@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Response, Request } from "express";
 import UserModel from "../models/User.model";
 import { client } from "../bot";
 import { CustomRequest, UserGuildDataType } from "./auth.controller";
@@ -160,6 +160,33 @@ export const updateServer = async (req: CustomRequest, res: Response) => {
 
   res.json(updatedServer);
   return;
+};
+
+export const getChannelIds = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const clientGuild = client.guilds.cache.get(id);
+  if (!clientGuild) {
+    res
+      .status(404)
+      .json({ error: "Server not found, add the bot in your discord server" });
+    return;
+  }
+
+  // Get the IDs of all text channels in the guild
+  const textChannels = clientGuild.channels.cache
+    .filter((c) => c.type === 0) // Filter for text channels
+    .map((c) => ({ name: c.name, id: c.id })); // Map to extract the channel IDs and Names
+
+  // If no text channels are found, return a message indicating this
+  if (textChannels.length === 0) {
+    return res
+      .status(200)
+      .json({ message: "No text channels found in this guild." });
+  }
+
+  // Send the list of text channel IDs back in the response
+  return res.status(200).json(textChannels);
 };
 
 const filterAdminServers = async (userGuildsData: UserGuildDataType[]) => {
