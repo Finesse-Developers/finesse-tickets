@@ -26,6 +26,31 @@ export type DiscordServerType = {
   staffMembers: string[]; // array of discord user ids
 };
 
+type PanelType = {
+  serverId: string;
+  mentionOnOpenRoleIds: string[];
+  ticketCategoryId: string;
+  title: string;
+  content: string;
+  panelColor: string;
+  channelId: string;
+  channelName: string;
+  buttonColor: string;
+  buttonText: string;
+  buttonEmoji: string | null;
+  largeImageUrl: string | null;
+  smallImageUrl: string | null;
+  welcomeMessage: {
+    embedColor: string;
+    title: string;
+    titleUrl: string | null;
+    largeImageUrl: string | null;
+    smallImageUrl: string | null;
+    footerText: string | null;
+    footerIconUrl: string | null;
+  };
+};
+
 type ChannelData = Array<{ id: string; name: string }>;
 
 interface DiscordServerContextType {
@@ -38,6 +63,7 @@ interface DiscordServerContextType {
   }[];
   loading: boolean;
   error: string | null;
+  panels: PanelType[];
 }
 
 const DiscordServerContext = createContext<DiscordServerContextType | null>(
@@ -68,6 +94,7 @@ export const DiscordServerProvider = ({
   const [channels, setChannels] = useState<
     { name: string; value: string; disabled: boolean }[]
   >([]);
+  const [panels, setPanels] = useState<PanelType[]>([]);
   const nav = useNavigate();
 
   useEffect(() => {
@@ -76,6 +103,8 @@ export const DiscordServerProvider = ({
         setLoading(true);
         setDiscordServer(null);
         setError(null);
+        setChannels([]);
+        setPanels([]);
 
         const res = await fetch(
           `http://localhost:6969/dashboard/fetch-server/${id}`,
@@ -97,6 +126,10 @@ export const DiscordServerProvider = ({
           value: c.id,
           disabled: false,
         }));
+
+        const panelData = await getPanels();
+
+        if (panelData) setPanels(panelData);
 
         if (channels && channels !== undefined) {
           setChannels([
@@ -151,12 +184,31 @@ export const DiscordServerProvider = ({
     } catch (error) {
       setError("Something went wrong in fetching channels, please try again.");
       console.log(error);
+      return;
+    }
+  };
+
+  const getPanels = async () => {
+    try {
+      const res = await fetch(`http://localhost:6969/panel/get-panels/${id}`, {
+        credentials: "include",
+      });
+      if (!res.ok) {
+        setError("Something went wrong in fetching panels, please try again.");
+        return;
+      }
+      const data: PanelType[] = await res.json();
+      return data;
+    } catch (error) {
+      setError("Something went wrong in fetching panels, please try again.");
+      console.log(error);
+      return;
     }
   };
 
   return (
     <DiscordServerContext.Provider
-      value={{ discordServer, loading, getServer, error, channels }}
+      value={{ discordServer, loading, getServer, error, channels, panels }}
     >
       {children}
     </DiscordServerContext.Provider>

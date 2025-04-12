@@ -4,6 +4,58 @@ import { filterAdminServers } from "./dashboard.controller";
 import UserModel from "../models/User.model";
 import PanelModel from "../models/Panel.model";
 
+export const getPanels = async (req: CustomRequest, res: Response) => {
+  try {
+    if (!req.user?.accessToken) {
+      res.status(401).json({ error: "Unauthorized: No access token" });
+      return;
+    }
+
+    const user = await UserModel.findById(req.user.user.id);
+    if (!user) {
+      res.status(401).json({ error: "Unauthorized: User not found" });
+      return;
+    }
+
+    // Fetch user's guilds from Discord API
+    const response = await fetch("https://discord.com/api/users/@me/guilds", {
+      headers: {
+        Authorization: `Bearer ${req.user.accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      res
+        .status(401)
+        .json({ error: "Failed to fetch user guilds from Discord" });
+      return;
+    }
+
+    const userGuildsData = (await response.json()) as UserGuildDataType[];
+
+    const mutualAdminGuilds = await filterAdminServers(userGuildsData);
+
+    const { serverId } = req.params;
+
+    const isAuthorized = mutualAdminGuilds.some(
+      (guild) => guild.id === serverId
+    );
+    if (!isAuthorized) {
+      res.status(401).json({ error: "Unauthorized: User not found" });
+      return;
+    }
+
+    const panels = await PanelModel.find({ serverId });
+
+    res.json(panels);
+    return;
+  } catch (error) {
+    console.error("Error getting panels:", error);
+    res.status(500).json({ error: "Internal server error" });
+    return;
+  }
+};
+
 export const createPanel = async (req: CustomRequest, res: Response) => {
   try {
     if (!req.user?.accessToken) {
@@ -43,6 +95,7 @@ export const createPanel = async (req: CustomRequest, res: Response) => {
       content,
       panelColor,
       channelId,
+      channelName,
       buttonColor,
       buttonText,
       buttonEmoji,
@@ -57,7 +110,10 @@ export const createPanel = async (req: CustomRequest, res: Response) => {
       welcomeFooterIconUrl,
     } = req.body;
 
-    if (!mutualAdminGuilds.includes(serverId)) {
+    const isAuthorized = mutualAdminGuilds.some(
+      (guild) => guild.id === serverId
+    );
+    if (!isAuthorized) {
       res.status(401).json({ error: "Unauthorized: User not found" });
       return;
     }
@@ -70,6 +126,7 @@ export const createPanel = async (req: CustomRequest, res: Response) => {
       content,
       panelColor,
       channelId,
+      channelName,
       buttonColor,
       buttonText,
       buttonEmoji,

@@ -14,6 +14,7 @@ if (!sessionSecret) throw new Error("missing .env variables");
 
 import authRoutes from "./routes/auth.route";
 import dashboardRoutes from "./routes/dashboard.route";
+import panelRoutes from "./routes/panel.route";
 
 const app = express();
 
@@ -44,6 +45,7 @@ mongoose
 
 app.use("/auth", authRoutes);
 app.use("/dashboard", dashboardRoutes);
+app.use("/panel", panelRoutes);
 app.get("/", (_req: Request, res: Response) => {
   res.send(200);
   return;

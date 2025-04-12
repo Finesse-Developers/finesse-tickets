@@ -8,6 +8,7 @@ export type PanelType = {
   content: string;
   panelColor: string;
   channelId: string;
+  channelName: string;
   buttonColor: string;
   buttonText: string;
   buttonEmoji: string | null;
@@ -35,6 +36,7 @@ const panelSchema = new mongoose.Schema({
   content: { type: String, default: "" },
   panelColor: { type: String, required: true },
   channelId: { type: String, required: true },
+  channelName: { type: String, required: true },
   buttonColor: { type: String, required: true },
   buttonText: { type: String, required: true },
   buttonEmoji: { type: String, default: null },
