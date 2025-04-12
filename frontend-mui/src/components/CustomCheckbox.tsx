@@ -1,4 +1,5 @@
 import { FormControlLabel, Checkbox } from "@mui/material";
+import { memo } from "react";
 
 type CustomCheckboxPropType = {
   checked: boolean;
@@ -6,7 +7,7 @@ type CustomCheckboxPropType = {
   label: string;
 };
 
-export default function CustomCheckbox({
+function CustomCheckbox({
   checked,
   stateAction,
   label,
@@ -32,3 +33,5 @@ export default function CustomCheckbox({
     />
   );
 }
+
+export default memo(CustomCheckbox);

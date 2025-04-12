@@ -8,7 +8,7 @@ import fns_logo from "/fns_logo.png";
 import { Avatar, Menu, MenuItem, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { PlainButton } from "./PlainButton";
-import { useState, MouseEvent } from "react";
+import { useState, MouseEvent, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 
 // Styled toolbar
@@ -29,18 +29,18 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const handleMenuOpen = (event: MouseEvent<HTMLDivElement>) => {
+  const handleMenuOpen = useCallback((event: MouseEvent<HTMLDivElement>) => {
     setAnchorEl(event.currentTarget);
-  };
+  }, []);
 
-  const handleMenuClose = () => {
+  const handleMenuClose = useCallback(() => {
     setAnchorEl(null);
-  };
+  }, []);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     logout();
     handleMenuClose();
-  };
+  }, []);
 
   return (
     <AppBar

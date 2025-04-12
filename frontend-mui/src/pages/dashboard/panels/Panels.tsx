@@ -6,7 +6,7 @@ import { useDiscordServer } from "../../../context/DiscordServerContext";
 
 export default function Panels() {
   const { id } = useParams();
-  const { panels } = useDiscordServer();
+  const { panels, multiPanels } = useDiscordServer();
 
   return (
     <Box
@@ -68,6 +68,7 @@ export default function Panels() {
               channelName: p.channelName,
               panelTitle: p.title,
             }))}
+            type="panel"
           />
         </Box>
       </Box>
@@ -93,6 +94,35 @@ export default function Panels() {
         >
           Multi-Panels
         </Typography>
+
+        <Box display="flex" flexDirection="column">
+          <Box
+            marginBottom={5}
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            paddingX={2}
+          >
+            <Typography variant="h6" sx={{ color: "white" }}>
+              Your Multi-Panels: {multiPanels.length}/3
+            </Typography>
+
+            <Link
+              to={`/dashboard/${id}/panel/create`}
+              style={{ textDecoration: "none" }}
+            >
+              <PlainButton>+ New Multi-Panel</PlainButton>
+            </Link>
+          </Box>
+          <CustomTable
+            rows={multiPanels.map((p) => ({
+              id: p.channelId,
+              channelName: p.channelName,
+              panelTitle: p.panelTitle,
+            }))}
+            type="multi-panel"
+          />
+        </Box>
       </Box>
     </Box>
   );

@@ -8,6 +8,7 @@ import Paper from "@mui/material/Paper";
 import { PlainButton } from "./PlainButton";
 import { Link, useParams } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
+import { memo } from "react";
 
 type PropType = {
   rows: {
@@ -15,9 +16,10 @@ type PropType = {
     id: string;
     panelTitle: string;
   }[];
+  type: "panel" | "multi-panel";
 };
 
-export default function CustomTable({ rows }: PropType) {
+function CustomTable({ rows, type }: PropType) {
   const { id } = useParams();
 
   return (
@@ -66,7 +68,7 @@ export default function CustomTable({ rows }: PropType) {
                 <TableCell align="left">{row.panelTitle}</TableCell>
                 <TableCell align="right">
                   <PlainButton>SEND</PlainButton>
-                  <Link to={`/dashboard/${id}/panel/${row.id}/edit`}>
+                  <Link to={`/dashboard/${id}/${type}/${row.id}/edit`}>
                     <PlainButton>EDIT</PlainButton>
                   </Link>
                   <PlainButton>DELETE</PlainButton>
@@ -95,3 +97,5 @@ export default function CustomTable({ rows }: PropType) {
     </TableContainer>
   );
 }
+
+export default memo(CustomTable);

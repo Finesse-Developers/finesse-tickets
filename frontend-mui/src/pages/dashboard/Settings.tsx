@@ -8,7 +8,7 @@ import {
   SelectChangeEvent,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import RadioButtonWithLabel from "../../components/RadioButtonWithLabel";
 import CustomSelect from "../../components/CustomSelect";
 import CustomNumberTextField from "../../components/CustomNumberTextField";
@@ -108,31 +108,38 @@ export default function Settings() {
   }, [discordServer, id]);
 
   // Handlers to update state when input changes
-  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTicketNameStyle(event.target.value);
-  };
+  const handleRadioChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setTicketNameStyle(event.target.value);
+    },
+    []
+  );
 
-  const handleTextFieldChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const { id, value } = event.target;
-    if (id === "maxTicketPerUser") {
-      setMaxTicketPerUser(
-        value === "" && value.length === 0 ? "" : Number(value)
-      );
-    }
-  };
+  const handleTextFieldChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { id, value } = event.target;
+      if (id === "maxTicketPerUser") {
+        setMaxTicketPerUser(
+          value === "" && value.length === 0 ? "" : Number(value)
+        );
+      }
+    },
+    []
+  );
 
-  const handleSwitchChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    setter: React.Dispatch<React.SetStateAction<boolean>>
-  ) => {
-    setter(event.target.checked);
-  };
+  const handleSwitchChange = useCallback(
+    (
+      event: React.ChangeEvent<HTMLInputElement>,
+      setter: React.Dispatch<React.SetStateAction<boolean>>
+    ) => {
+      setter(event.target.checked);
+    },
+    []
+  );
 
-  const handleSelectChange = (event: SelectChangeEvent) => {
+  const handleSelectChange = useCallback((event: SelectChangeEvent) => {
     setTicketTranscriptChannelId(event.target.value as string);
-  };
+  }, []);
 
   const handleSave = async () => {
     const serverSettings = {

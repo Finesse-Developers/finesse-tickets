@@ -1,7 +1,5 @@
 import {
-  Avatar,
   Box,
-  Card,
   CircularProgress,
   Container,
   Grid,

@@ -1,4 +1,5 @@
 import { TextField } from "@mui/material";
+import { memo } from "react";
 
 type CustomNumberTextField2PropType = {
   value: number | "";
@@ -7,7 +8,7 @@ type CustomNumberTextField2PropType = {
   label: string;
 };
 
-export default function CustomNumberTextField2({
+function CustomNumberTextField2({
   id,
   stateAction,
   value,
@@ -53,3 +54,5 @@ export default function CustomNumberTextField2({
     />
   );
 }
+
+export default memo(CustomNumberTextField2);

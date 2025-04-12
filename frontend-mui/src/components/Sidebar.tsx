@@ -1,8 +1,6 @@
-// Sidebar.tsx
 import {
   Avatar,
   Box,
-  Drawer,
   List,
   ListItemButton,
   ListItemIcon,
@@ -14,9 +12,9 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import DescriptionIcon from "@mui/icons-material/Description";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import GroupIcon from "@mui/icons-material/Group";
-import { DiscordServerType } from "../context/DiscordServerContext";
+import { DiscordServerType } from "../types/discordServer.types";
 import { Link } from "react-router-dom";
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 
 const hoverStyle = {
   color: "white",
@@ -133,4 +131,4 @@ const Sidebar = ({ discordServer }: { discordServer: DiscordServerType }) => {
   );
 };
 
-export default Sidebar;
+export default memo(Sidebar);

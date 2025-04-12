@@ -1,4 +1,5 @@
 import { FormControlLabel, Switch, Typography } from "@mui/material";
+import { memo } from "react";
 
 type CustomSwitchPropType = {
   checked: boolean;
@@ -10,7 +11,7 @@ type CustomSwitchPropType = {
   stateAction: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function CustomSwitch({
+function CustomSwitch({
   checked,
   handleSwitchChange,
   label,
@@ -51,3 +52,5 @@ export default function CustomSwitch({
     />
   );
 }
+
+export default memo(CustomSwitch);

@@ -1,4 +1,5 @@
 import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import { memo } from "react";
 
 type CustomSelectPropType = {
   value: string;
@@ -7,7 +8,7 @@ type CustomSelectPropType = {
   id: string;
 };
 
-export default function CustomSelect({
+function CustomSelect({
   value,
   handleSelectChange,
   items,
@@ -71,3 +72,5 @@ export default function CustomSelect({
     </Select>
   );
 }
+
+export default memo(CustomSelect);

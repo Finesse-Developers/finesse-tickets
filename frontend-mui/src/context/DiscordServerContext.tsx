@@ -1,70 +1,21 @@
 import {
   createContext,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { redirectToHomeIfNotAuth } from "../guards/Auth.ProtectedRoutes";
-
-export type DiscordServerType = {
-  serverId: string;
-  name: string;
-  icon: string | null;
-  ticketNameStyle: "name" | "number";
-  ticketTranscriptChannelId: string | null;
-  maxTicketPerUser: number;
-  ticketPermissions: string[];
-  autoClose: {
-    enabled: boolean;
-    closeOnUserLeave: boolean;
-    sinceOpenWithNoResponse: Date | null; // seconds
-    sinceLastMessage: Date | null; // seconds
-  };
-  transcripts: string[]; // array of closed ticket transcript ids
-  staffMembers: string[]; // array of discord user ids
-};
-
-type PanelType = {
-  serverId: string;
-  mentionOnOpenRoleIds: string[];
-  ticketCategoryId: string;
-  title: string;
-  content: string;
-  panelColor: string;
-  channelId: string;
-  channelName: string;
-  buttonColor: string;
-  buttonText: string;
-  buttonEmoji: string | null;
-  largeImageUrl: string | null;
-  smallImageUrl: string | null;
-  welcomeMessage: {
-    embedColor: string;
-    title: string;
-    titleUrl: string | null;
-    largeImageUrl: string | null;
-    smallImageUrl: string | null;
-    footerText: string | null;
-    footerIconUrl: string | null;
-  };
-};
-
-type ChannelData = Array<{ id: string; name: string }>;
-
-interface DiscordServerContextType {
-  discordServer: DiscordServerType | null;
-  getServer: (server: DiscordServerType) => void;
-  channels: {
-    name: string;
-    value: string;
-    disabled: boolean;
-  }[];
-  loading: boolean;
-  error: string | null;
-  panels: PanelType[];
-}
+import {
+  ChannelData,
+  DiscordServerContextType,
+  DiscordServerType,
+  MultiPanelType,
+  PanelType,
+} from "../types/discordServer.types";
 
 const DiscordServerContext = createContext<DiscordServerContextType | null>(
   null
@@ -95,16 +46,19 @@ export const DiscordServerProvider = ({
     { name: string; value: string; disabled: boolean }[]
   >([]);
   const [panels, setPanels] = useState<PanelType[]>([]);
+  const [multiPanels, setMultiPanels] = useState<MultiPanelType[]>([]);
   const nav = useNavigate();
 
   useEffect(() => {
+    if (!id) {
+      nav("/dashboard");
+      return;
+    }
+
     async function fetchServer() {
       try {
         setLoading(true);
-        setDiscordServer(null);
-        setError(null);
-        setChannels([]);
-        setPanels([]);
+        resetState();
 
         const res = await fetch(
           `http://localhost:6969/dashboard/fetch-server/${id}`,
@@ -129,7 +83,10 @@ export const DiscordServerProvider = ({
 
         const panelData = await getPanels();
 
-        if (panelData) setPanels(panelData);
+        if (panelData) {
+          setPanels(panelData.panels);
+          setMultiPanels(panelData.multiPanels);
+        }
 
         if (channels && channels !== undefined) {
           setChannels([
@@ -156,18 +113,24 @@ export const DiscordServerProvider = ({
       }
     }
 
-    if (id && id !== undefined) {
-      fetchServer();
-    } else {
-      nav("/dashboard");
-    }
+    fetchServer();
   }, [id]);
 
-  const getServer = (server: DiscordServerType) => {
-    setDiscordServer(server);
-  };
+  const resetState = useCallback(() => {
+    setDiscordServer(null);
+    setError(null);
+    setChannels([]);
+    setPanels([]);
+    setMultiPanels([]);
+  }, []);
 
-  const getChannelIds = async (): Promise<ChannelData | undefined> => {
+  const getServer = useCallback((server: DiscordServerType) => {
+    setDiscordServer(server);
+  }, []);
+
+  const getChannelIds = useCallback(async (): Promise<
+    ChannelData | undefined
+  > => {
     try {
       const res = await fetch(
         `http://localhost:6969/dashboard/get-channelIds/${id}`,
@@ -186,9 +149,15 @@ export const DiscordServerProvider = ({
       console.log(error);
       return;
     }
-  };
+  }, [id]);
 
-  const getPanels = async () => {
+  const getPanels = useCallback(async (): Promise<
+    | {
+        panels: PanelType[];
+        multiPanels: MultiPanelType[];
+      }
+    | undefined
+  > => {
     try {
       const res = await fetch(`http://localhost:6969/panel/get-panels/${id}`, {
         credentials: "include",
@@ -197,19 +166,33 @@ export const DiscordServerProvider = ({
         setError("Something went wrong in fetching panels, please try again.");
         return;
       }
-      const data: PanelType[] = await res.json();
+      const data: {
+        panels: PanelType[];
+        multiPanels: MultiPanelType[];
+      } = await res.json();
       return data;
     } catch (error) {
       setError("Something went wrong in fetching panels, please try again.");
       console.log(error);
       return;
     }
-  };
+  }, [id]);
+
+  const contextValue = useMemo(
+    () => ({
+      discordServer,
+      loading,
+      getServer,
+      error,
+      channels,
+      panels,
+      multiPanels,
+    }),
+    [discordServer, loading, getServer, error, channels, panels, multiPanels]
+  );
 
   return (
-    <DiscordServerContext.Provider
-      value={{ discordServer, loading, getServer, error, channels, panels }}
-    >
+    <DiscordServerContext.Provider value={contextValue}>
       {children}
     </DiscordServerContext.Provider>
   );

@@ -1,6 +1,7 @@
 import { FormControlLabel, Radio, Typography } from "@mui/material";
+import { memo } from "react";
 
-export default function RadioButtonWithLabel({
+function RadioButtonWithLabel({
   value,
   label,
 }: {
@@ -27,3 +28,5 @@ export default function RadioButtonWithLabel({
     />
   );
 }
+
+export default memo(RadioButtonWithLabel);

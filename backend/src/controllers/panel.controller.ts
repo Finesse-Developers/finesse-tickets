@@ -3,6 +3,7 @@ import { Response /*Request*/ } from "express";
 import { filterAdminServers } from "./dashboard.controller";
 import UserModel from "../models/User.model";
 import PanelModel from "../models/Panel.model";
+import MultiPanelModel from "../models/MultiPanel.model";
 
 export const getPanels = async (req: CustomRequest, res: Response) => {
   try {
@@ -46,8 +47,9 @@ export const getPanels = async (req: CustomRequest, res: Response) => {
     }
 
     const panels = await PanelModel.find({ serverId });
+    const multiPanels = await MultiPanelModel.find({ serverId });
 
-    res.json(panels);
+    res.json({ panels, multiPanels });
     return;
   } catch (error) {
     console.error("Error getting panels:", error);
