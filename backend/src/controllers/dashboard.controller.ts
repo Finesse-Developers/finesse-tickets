@@ -47,7 +47,7 @@ export const getAdminServers = async (
   }
 };
 
-export const fetchServer = async (req: CustomRequest, res: Response) => {
+export const fetchServer = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   const clientGuild = client.guilds.cache.get(id);
@@ -61,6 +61,7 @@ export const fetchServer = async (req: CustomRequest, res: Response) => {
   const existingDiscordServer = await DiscordServerModel.findOne({
     serverId: id,
   });
+
   if (!existingDiscordServer) {
     const newDiscordServer = await DiscordServerModel.create({
       serverId: id,
@@ -189,7 +190,9 @@ export const getChannelIds = async (req: Request, res: Response) => {
   return res.status(200).json(textChannels);
 };
 
-const filterAdminServers = async (userGuildsData: UserGuildDataType[]) => {
+export const filterAdminServers = async (
+  userGuildsData: UserGuildDataType[]
+) => {
   // Filter guilds where user is an admin or owner
   const adminGuilds = userGuildsData.filter((guild) => {
     const permissions = BigInt(guild.permissions);

@@ -19,6 +19,31 @@ export default function CustomSelect({
       value={value}
       onChange={handleSelectChange}
       displayEmpty
+      MenuProps={{
+        PaperProps: {
+          style: {
+            maxHeight: 200,
+            overflowY: "auto",
+          },
+        },
+        MenuListProps: {
+          sx: {
+            "& .MuiMenuItem-root": {
+              "&:hover": {
+                backgroundColor: "#444", // dark hover background
+                color: "white", // keep text white on hover
+              },
+              "&.Mui-selected": {
+                backgroundColor: "#555",
+                color: "white",
+                "&:hover": {
+                  backgroundColor: "#666",
+                },
+              },
+            },
+          },
+        },
+      }}
       sx={{
         color: "white",
         ".MuiOutlinedInput-notchedOutline": {
@@ -34,9 +59,8 @@ export default function CustomSelect({
           color: "white",
         },
       }}
-      defaultValue="none"
     >
-      <MenuItem value="" disabled={true}>
+      <MenuItem value="" disabled>
         Please select transcript channel
       </MenuItem>
       {items.map((item, i) => (
