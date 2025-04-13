@@ -11,8 +11,16 @@ export type DiscordServerType = {
   autoClose: {
     enabled: boolean;
     closeOnUserLeave: boolean;
-    sinceOpenWithNoResponse: Date | null; // seconds
-    sinceLastMessage: Date | null; // seconds
+    sinceOpenWithNoResponse: {
+      day: number;
+      hour: number;
+      min: number;
+    } | null;
+    sinceLastMessage: {
+      day: number;
+      hour: number;
+      min: number;
+    } | null;
   };
   transcripts: string[]; // array of closed ticket transcript ids
   staffMembers: string[]; // array of discord user ids
@@ -20,6 +28,13 @@ export type DiscordServerType = {
 
 export interface DiscordServerDocument extends DiscordServerType, Document {}
 export interface DiscordServerModel extends Model<DiscordServerDocument> {}
+
+const timeConfigSchema = {
+  day: { type: Number, required: true },
+  hour: { type: Number, required: true },
+  min: { type: Number, required: true },
+  _id: false,
+};
 
 const discordServerSchema = new mongoose.Schema({
   serverId: { type: String, required: true, unique: true },
@@ -36,8 +51,8 @@ const discordServerSchema = new mongoose.Schema({
   autoClose: {
     enabled: { type: Boolean, required: true, default: false },
     closeOnUserLeave: { type: Boolean, required: true, default: false },
-    sinceOpenWithNoResponse: { type: Date, default: null },
-    sinceLastMessage: { type: Date, default: null },
+    sinceOpenWithNoResponse: { type: timeConfigSchema, default: null },
+    sinceLastMessage: { type: timeConfigSchema, default: null },
   },
   transcripts: { type: [String], default: [] },
   staffMembers: { type: [String], default: [] },

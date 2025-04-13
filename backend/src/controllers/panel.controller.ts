@@ -1,48 +1,15 @@
-import { CustomRequest, UserGuildDataType } from "./auth.controller";
-import { Response /*Request*/ } from "express";
-import { filterAdminServers } from "./dashboard.controller";
-import UserModel from "../models/User.model";
+import { CustomRequest, isUserAuthorizedForGuild } from "./auth.controller";
+import { Response } from "express";
 import PanelModel from "../models/Panel.model";
 import MultiPanelModel from "../models/MultiPanel.model";
 
 export const getPanels = async (req: CustomRequest, res: Response) => {
   try {
-    if (!req.user?.accessToken) {
-      res.status(401).json({ error: "Unauthorized: No access token" });
-      return;
-    }
-
-    const user = await UserModel.findById(req.user.user.id);
-    if (!user) {
-      res.status(401).json({ error: "Unauthorized: User not found" });
-      return;
-    }
-
-    // Fetch user's guilds from Discord API
-    const response = await fetch("https://discord.com/api/users/@me/guilds", {
-      headers: {
-        Authorization: `Bearer ${req.user.accessToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      res
-        .status(401)
-        .json({ error: "Failed to fetch user guilds from Discord" });
-      return;
-    }
-
-    const userGuildsData = (await response.json()) as UserGuildDataType[];
-
-    const mutualAdminGuilds = await filterAdminServers(userGuildsData);
-
     const { serverId } = req.params;
 
-    const isAuthorized = mutualAdminGuilds.some(
-      (guild) => guild.id === serverId
-    );
-    if (!isAuthorized) {
-      res.status(401).json({ error: "Unauthorized: User not found" });
+    const { authorized, error } = await isUserAuthorizedForGuild(req, serverId);
+    if (!authorized) {
+      res.status(error?.startsWith("Unauthorized") ? 401 : 403).json({ error });
       return;
     }
 
@@ -60,34 +27,13 @@ export const getPanels = async (req: CustomRequest, res: Response) => {
 
 export const createPanel = async (req: CustomRequest, res: Response) => {
   try {
-    if (!req.user?.accessToken) {
-      res.status(401).json({ error: "Unauthorized: No access token" });
+    const { id } = req.params;
+
+    const { authorized, error } = await isUserAuthorizedForGuild(req, id);
+    if (!authorized) {
+      res.status(error?.startsWith("Unauthorized") ? 401 : 403).json({ error });
       return;
     }
-
-    const user = await UserModel.findById(req.user.user.id);
-    if (!user) {
-      res.status(401).json({ error: "Unauthorized: User not found" });
-      return;
-    }
-
-    // Fetch user's guilds from Discord API
-    const response = await fetch("https://discord.com/api/users/@me/guilds", {
-      headers: {
-        Authorization: `Bearer ${req.user.accessToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      res
-        .status(401)
-        .json({ error: "Failed to fetch user guilds from Discord" });
-      return;
-    }
-
-    const userGuildsData = (await response.json()) as UserGuildDataType[];
-
-    const mutualAdminGuilds = await filterAdminServers(userGuildsData);
 
     const {
       serverId,
@@ -111,14 +57,6 @@ export const createPanel = async (req: CustomRequest, res: Response) => {
       welcomeFooterText,
       welcomeFooterIconUrl,
     } = req.body;
-
-    const isAuthorized = mutualAdminGuilds.some(
-      (guild) => guild.id === serverId
-    );
-    if (!isAuthorized) {
-      res.status(401).json({ error: "Unauthorized: User not found" });
-      return;
-    }
 
     const newPanel = await PanelModel.create({
       serverId,

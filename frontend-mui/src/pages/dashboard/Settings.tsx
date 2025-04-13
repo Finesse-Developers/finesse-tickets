@@ -18,7 +18,6 @@ import CustomNumberTextField2 from "../../components/CustomNumberTextField2";
 import { PlainButton } from "../../components/PlainButton";
 import { useParams } from "react-router-dom";
 import { useDiscordServer } from "../../context/DiscordServerContext";
-import { convertToDaysHoursMins } from "../../utils/helper";
 
 export default function Settings() {
   const { id } = useParams();
@@ -77,30 +76,18 @@ export default function Settings() {
         setCloseWhenUserLeaves(discordServer.autoClose.closeOnUserLeave);
 
         if (discordServer.autoClose.sinceOpenWithNoResponse) {
-          const convertedOpenNoResponse = convertToDaysHoursMins(
-            discordServer.autoClose.sinceOpenWithNoResponse
-          );
-          setOpenNoResponseDays(convertedOpenNoResponse.days);
-          setOpenNoResponseHours(convertedOpenNoResponse.hours);
-          setOpenNoResponseMinutes(convertedOpenNoResponse.mins);
-        } else {
-          setOpenNoResponseDays("");
-          setOpenNoResponseHours("");
-          setOpenNoResponseMinutes("");
+          const { day, hour, min } =
+            discordServer.autoClose.sinceOpenWithNoResponse;
+          setOpenNoResponseDays(day);
+          setOpenNoResponseHours(hour);
+          setOpenNoResponseMinutes(min);
         }
 
         if (discordServer.autoClose.sinceLastMessage) {
-          const convertedSinceLastMessage = convertToDaysHoursMins(
-            discordServer.autoClose.sinceLastMessage
-          );
-
-          setSinceLastMessageDays(convertedSinceLastMessage.days);
-          setSinceLastMessageHours(convertedSinceLastMessage.hours);
-          setSinceLastMessageMinutes(convertedSinceLastMessage.mins);
-        } else {
-          setSinceLastMessageDays("");
-          setSinceLastMessageHours("");
-          setSinceLastMessageMinutes("");
+          const { day, hour, min } = discordServer.autoClose.sinceLastMessage;
+          setSinceLastMessageDays(day);
+          setSinceLastMessageHours(hour);
+          setSinceLastMessageMinutes(min);
         }
       }
     }
@@ -119,9 +106,7 @@ export default function Settings() {
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const { id, value } = event.target;
       if (id === "maxTicketPerUser") {
-        setMaxTicketPerUser(
-          value === "" && value.length === 0 ? "" : Number(value)
-        );
+        setMaxTicketPerUser(value === "" ? "" : Number(value));
       }
     },
     []

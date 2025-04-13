@@ -9,8 +9,16 @@ export type DiscordServerType = {
   autoClose: {
     enabled: boolean;
     closeOnUserLeave: boolean;
-    sinceOpenWithNoResponse: Date | null; // seconds
-    sinceLastMessage: Date | null; // seconds
+    sinceOpenWithNoResponse: {
+      day: number;
+      hour: number;
+      min: number;
+    } | null;
+    sinceLastMessage: {
+      day: number;
+      hour: number;
+      min: number;
+    } | null;
   };
   transcripts: string[]; // array of closed ticket transcript ids
   staffMembers: string[]; // array of discord user ids
@@ -82,4 +90,5 @@ export interface DiscordServerContextType {
   error: string | null;
   panels: PanelType[];
   multiPanels: MultiPanelType[];
+  roles: { name: string; id: string }[];
 }

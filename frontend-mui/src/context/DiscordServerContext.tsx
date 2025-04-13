@@ -47,6 +47,7 @@ export const DiscordServerProvider = ({
   >([]);
   const [panels, setPanels] = useState<PanelType[]>([]);
   const [multiPanels, setMultiPanels] = useState<MultiPanelType[]>([]);
+  const [roles, setRoles] = useState<{ name: string; id: string }[]>([]);
   const nav = useNavigate();
 
   useEffect(() => {
@@ -104,6 +105,9 @@ export const DiscordServerProvider = ({
           ]);
         }
 
+        const roleData = await getRoles();
+        if (roleData) setRoles(roleData);
+
         setDiscordServer(data.discordServer);
       } catch (error) {
         console.error(error);
@@ -122,6 +126,7 @@ export const DiscordServerProvider = ({
     setChannels([]);
     setPanels([]);
     setMultiPanels([]);
+    setRoles([]);
   }, []);
 
   const getServer = useCallback((server: DiscordServerType) => {
@@ -178,6 +183,25 @@ export const DiscordServerProvider = ({
     }
   }, [id]);
 
+  const getRoles = useCallback(async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:6969/dashboard/get-roles/${id}`,
+        { credentials: "include" }
+      );
+      if (!res.ok) {
+        setError("Something went wrong in fetching roles, please try again.");
+        return;
+      }
+      const data: { name: string; id: string }[] = await res.json();
+      return data;
+    } catch (error) {
+      setError("Something went wrong in fetching roles, please try again.");
+      console.log(error);
+      return;
+    }
+  }, [id]);
+
   const contextValue = useMemo(
     () => ({
       discordServer,
@@ -187,8 +211,18 @@ export const DiscordServerProvider = ({
       channels,
       panels,
       multiPanels,
+      roles,
     }),
-    [discordServer, loading, getServer, error, channels, panels, multiPanels]
+    [
+      discordServer,
+      loading,
+      getServer,
+      error,
+      channels,
+      panels,
+      multiPanels,
+      roles,
+    ]
   );
 
   return (
