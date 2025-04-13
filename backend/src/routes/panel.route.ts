@@ -1,17 +1,22 @@
 import { RequestHandler, Router } from "express";
-import { isAuthenticated } from "../middleware/auth.middleware";
+import {
+  isAuthenticated,
+  isUserAuthorizedForGuild,
+} from "../middleware/auth.middleware";
 import { createPanel, getPanels } from "../controllers/panel.controller";
 
 const panelRoutes = Router();
 
 panelRoutes.get(
-  "/get-panels/:serverId",
+  "/get-panels/:id",
   isAuthenticated as RequestHandler,
+  isUserAuthorizedForGuild as RequestHandler,
   getPanels as RequestHandler
 );
 panelRoutes.post(
   "/create",
   isAuthenticated as RequestHandler,
+  isUserAuthorizedForGuild as RequestHandler,
   createPanel as RequestHandler
 );
 

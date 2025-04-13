@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import passport from "passport";
-import UserModel, { UserDocument } from "../models/User.model";
+import { UserDocument } from "../models/User.model";
 import { Session, SessionData } from "express-session";
 import { filterAdminServers } from "./dashboard.controller";
 
@@ -11,6 +11,7 @@ export interface CustomSessionData extends SessionData {
       accessToken: string;
     };
   };
+  adminGuilds?: string[];
 }
 
 export interface CustomRequest extends Request {
@@ -44,7 +45,8 @@ export const discordAuthenticatePassport = (
 
 export const discordAuthRedirect = passport.authenticate("discord", {
   failureRedirect: `${process.env.FRONTEND_URL}`,
-  successRedirect: `${process.env.FRONTEND_URL}/dashboard`,
+  session: true,
+  // successRedirect: `${process.env.FRONTEND_URL}/dashboard`,
   // failureRedirect: "/",
   // successRedirect: "/auth/dashboard",
 });
@@ -55,9 +57,37 @@ export const authorizeUser = async (req: CustomRequest, res: Response) => {
     return;
   }
 
-  res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
-  // res.redirect("http://localhost:5173/dashboard");
-  return;
+  try {
+    const response = await fetch("https://discord.com/api/users/@me/guilds", {
+      headers: {
+        Authorization: `Bearer ${req.session.passport.user.accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.log(errorText);
+      res.status(403).json({
+        error: "Failed to fetch user guilds from Discord",
+      });
+      return;
+    }
+    const userGuildsData = await response.json();
+    const mutualAdminGuilds = filterAdminServers(
+      userGuildsData as UserGuildDataType[]
+    ).map((g) => g.id);
+
+    req.session.adminGuilds = mutualAdminGuilds;
+
+    req.session.save(() => {
+      res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
+    });
+    return;
+  } catch (error) {
+    console.error("Error during authorizing user:", error);
+    res.redirect("/auth");
+    return;
+  }
 };
 
 export const getCurrentUser = async (
@@ -106,37 +136,4 @@ export const checkSession = async (req: CustomRequest, res: Response) => {
     console.error("Error checking session:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-};
-
-export const isUserAuthorizedForGuild = async (
-  req: CustomRequest,
-  guildId: string
-): Promise<{ authorized: boolean; error?: string }> => {
-  if (!req.user?.accessToken) {
-    return { authorized: false, error: "Unauthorized: No access token" };
-  }
-
-  const user = await UserModel.findById(req.user.user.id);
-  if (!user) {
-    return { authorized: false, error: "Unauthorized: User not found" };
-  }
-
-  const response = await fetch("https://discord.com/api/users/@me/guilds", {
-    headers: {
-      Authorization: `Bearer ${req.user.accessToken}`,
-    },
-  });
-
-  if (!response.ok) {
-    return {
-      authorized: false,
-      error: "Failed to fetch user guilds from Discord",
-    };
-  }
-
-  const userGuildsData = (await response.json()) as UserGuildDataType[];
-  const mutualAdminGuilds = await filterAdminServers(userGuildsData);
-  const isAuthorized = mutualAdminGuilds.some((g) => g.id === guildId);
-
-  return { authorized: isAuthorized };
 };

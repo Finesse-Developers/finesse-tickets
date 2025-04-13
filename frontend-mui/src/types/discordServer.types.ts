@@ -91,4 +91,5 @@ export interface DiscordServerContextType {
   panels: PanelType[];
   multiPanels: MultiPanelType[];
   roles: { name: string; id: string }[];
+  categories: { name: string; id: string }[];
 }

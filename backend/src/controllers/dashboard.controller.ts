@@ -1,11 +1,7 @@
 import { Response, Request } from "express";
 import UserModel from "../models/User.model";
 import { client } from "../bot";
-import {
-  CustomRequest,
-  isUserAuthorizedForGuild,
-  UserGuildDataType,
-} from "./auth.controller";
+import { CustomRequest, UserGuildDataType } from "./auth.controller";
 import DiscordServerModel from "../models/DiscordServer.model";
 import { updateDiscordServer } from "../utils/discordServerHelper";
 import { ChannelType } from "discord.js";
@@ -94,12 +90,6 @@ export const fetchServer = async (req: Request, res: Response) => {
 export const updateServer = async (req: CustomRequest, res: Response) => {
   try {
     const { id } = req.params;
-
-    const { authorized, error } = await isUserAuthorizedForGuild(req, id);
-    if (!authorized) {
-      res.status(error?.startsWith("Unauthorized") ? 401 : 403).json({ error });
-      return;
-    }
 
     const {
       ticketNameStyle,
@@ -208,7 +198,7 @@ export const getChannelIds = async (req: Request, res: Response) => {
   }
 };
 
-export const getRoles = async (req: Request, res: Response) => {
+export const getRolesAndCategories = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -225,33 +215,6 @@ export const getRoles = async (req: Request, res: Response) => {
       id: r.id,
     }));
 
-    res.json(roles);
-    return;
-  } catch (error) {
-    console.error("Error getting roles:", error);
-    res.status(500).json({ error: "Internal server error" });
-    return;
-  }
-};
-
-export const getCategories = async (req: CustomRequest, res: Response) => {
-  try {
-    const { id } = req.params;
-
-    const { authorized, error } = await isUserAuthorizedForGuild(req, id);
-    if (!authorized) {
-      res.status(error?.startsWith("Unauthorized") ? 401 : 403).json({ error });
-      return;
-    }
-
-    const clientGuild = client.guilds.cache.get(id);
-    if (!clientGuild) {
-      res.status(404).json({
-        error: "Server not found, add the bot in your discord server",
-      });
-      return;
-    }
-
     const categories = clientGuild.channels.cache
       .filter((channel) => channel.type === ChannelType.GuildCategory)
       .map((c) => ({
@@ -259,18 +222,16 @@ export const getCategories = async (req: CustomRequest, res: Response) => {
         id: c.id,
       }));
 
-    res.json(categories);
+    res.json({ roles, categories });
     return;
   } catch (error) {
-    console.error("Error getting categories:", error);
+    console.error("Error getting roles and categories:", error);
     res.status(500).json({ error: "Internal server error" });
     return;
   }
 };
 
-export const filterAdminServers = async (
-  userGuildsData: UserGuildDataType[]
-) => {
+export const filterAdminServers = (userGuildsData: UserGuildDataType[]) => {
   // Filter guilds where user is an admin or owner
   const adminGuilds = userGuildsData.filter((guild) => {
     const permissions = BigInt(guild.permissions);

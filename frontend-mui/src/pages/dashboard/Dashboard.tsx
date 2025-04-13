@@ -6,7 +6,7 @@ import { useDiscordServer } from "../../context/DiscordServerContext";
 export default function Dashboard() {
   const { discordServer, loading, error } = useDiscordServer();
 
-  if (loading || !discordServer) {
+  if (loading && !discordServer) {
     return (
       <Box
         sx={{
@@ -21,7 +21,7 @@ export default function Dashboard() {
     );
   }
 
-  if (error) {
+  if (error || !discordServer) {
     return (
       <Box
         sx={{
@@ -33,7 +33,9 @@ export default function Dashboard() {
         }}
       >
         <Typography variant="h5" color="white">
-          {error}
+          {!discordServer
+            ? "Failed to fetch data from the discord server"
+            : error}
         </Typography>
       </Box>
     );

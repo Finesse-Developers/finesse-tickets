@@ -1,4 +1,4 @@
-import { CustomRequest, isUserAuthorizedForGuild } from "./auth.controller";
+import { CustomRequest } from "./auth.controller";
 import { Response } from "express";
 import PanelModel from "../models/Panel.model";
 import MultiPanelModel from "../models/MultiPanel.model";
@@ -6,12 +6,6 @@ import MultiPanelModel from "../models/MultiPanel.model";
 export const getPanels = async (req: CustomRequest, res: Response) => {
   try {
     const { serverId } = req.params;
-
-    const { authorized, error } = await isUserAuthorizedForGuild(req, serverId);
-    if (!authorized) {
-      res.status(error?.startsWith("Unauthorized") ? 401 : 403).json({ error });
-      return;
-    }
 
     const panels = await PanelModel.find({ serverId });
     const multiPanels = await MultiPanelModel.find({ serverId });
@@ -27,14 +21,6 @@ export const getPanels = async (req: CustomRequest, res: Response) => {
 
 export const createPanel = async (req: CustomRequest, res: Response) => {
   try {
-    const { id } = req.params;
-
-    const { authorized, error } = await isUserAuthorizedForGuild(req, id);
-    if (!authorized) {
-      res.status(error?.startsWith("Unauthorized") ? 401 : 403).json({ error });
-      return;
-    }
-
     const {
       serverId,
       mentionOnOpenRoleIds,

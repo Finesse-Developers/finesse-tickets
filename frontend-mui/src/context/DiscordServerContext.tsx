@@ -48,6 +48,9 @@ export const DiscordServerProvider = ({
   const [panels, setPanels] = useState<PanelType[]>([]);
   const [multiPanels, setMultiPanels] = useState<MultiPanelType[]>([]);
   const [roles, setRoles] = useState<{ name: string; id: string }[]>([]);
+  const [categories, setCategories] = useState<{ name: string; id: string }[]>(
+    []
+  );
   const nav = useNavigate();
 
   useEffect(() => {
@@ -89,6 +92,13 @@ export const DiscordServerProvider = ({
           setMultiPanels(panelData.multiPanels);
         }
 
+        const rolesAndCategoriesData = await getRolesAndCategories();
+        if (rolesAndCategoriesData?.categories)
+          setCategories(rolesAndCategoriesData.categories);
+
+        if (rolesAndCategoriesData?.roles)
+          setRoles(rolesAndCategoriesData.roles);
+
         if (channels && channels !== undefined) {
           setChannels([
             { name: "None", value: "none", disabled: false },
@@ -105,9 +115,6 @@ export const DiscordServerProvider = ({
           ]);
         }
 
-        const roleData = await getRoles();
-        if (roleData) setRoles(roleData);
-
         setDiscordServer(data.discordServer);
       } catch (error) {
         console.error(error);
@@ -122,11 +129,12 @@ export const DiscordServerProvider = ({
 
   const resetState = useCallback(() => {
     setDiscordServer(null);
-    setError(null);
     setChannels([]);
     setPanels([]);
     setMultiPanels([]);
     setRoles([]);
+    setCategories([]);
+    setError(null);
   }, []);
 
   const getServer = useCallback((server: DiscordServerType) => {
@@ -183,20 +191,22 @@ export const DiscordServerProvider = ({
     }
   }, [id]);
 
-  const getRoles = useCallback(async () => {
+  const getRolesAndCategories = useCallback(async () => {
     try {
       const res = await fetch(
-        `http://localhost:6969/dashboard/get-roles/${id}`,
+        `http://localhost:6969/dashboard/get-roles-categories/${id}`,
         { credentials: "include" }
       );
-      if (!res.ok) {
-        setError("Something went wrong in fetching roles, please try again.");
-        return;
-      }
-      const data: { name: string; id: string }[] = await res.json();
+
+      const data: {
+        roles: { name: string; id: string }[];
+        categories: { name: string; id: string }[];
+      } = await res.json();
       return data;
     } catch (error) {
-      setError("Something went wrong in fetching roles, please try again.");
+      setError(
+        "Something went wrong in fetching roles and categories, please try again."
+      );
       console.log(error);
       return;
     }
@@ -212,6 +222,7 @@ export const DiscordServerProvider = ({
       panels,
       multiPanels,
       roles,
+      categories,
     }),
     [
       discordServer,
@@ -222,6 +233,7 @@ export const DiscordServerProvider = ({
       panels,
       multiPanels,
       roles,
+      categories,
     ]
   );
 

@@ -1,11 +1,19 @@
-import { Box, FormControl, FormLabel, Typography } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  FormLabel,
+  SelectChangeEvent,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
 import { useDiscordServer } from "../../../context/DiscordServerContext";
 import CustomMultiSelect from "../../../components/CustomMultiSelect";
+import CustomSelect from "../../../components/CustomSelect";
 
 export default function CreatePanel() {
-  const { roles } = useDiscordServer();
+  const { roles, categories } = useDiscordServer();
   const [mentionOnOpen, setMentionOnOpen] = useState<string[]>([]);
+  const [ticketCategoryId, setTicketCategoryId] = useState("");
 
   return (
     <Box
@@ -53,6 +61,34 @@ export default function CreatePanel() {
           items={roles.map((r) => ({
             name: r.name,
             value: r.id,
+            disabled: false,
+          }))}
+        />
+      </FormControl>
+
+      <FormControl sx={{ margin: 1.5, width: "400px" }}>
+        <FormLabel
+          htmlFor="ticketCategoryId"
+          sx={{
+            color: "white",
+            mb: 1,
+            "&.Mui-focused": {
+              color: "white",
+            },
+          }}
+        >
+          Ticket category
+        </FormLabel>
+
+        <CustomSelect
+          id="ticketCategoryId"
+          value={ticketCategoryId}
+          handleSelectChange={(event: SelectChangeEvent) =>
+            setTicketCategoryId(event.target.value as string)
+          }
+          items={categories.map((c) => ({
+            name: c.name,
+            value: c.id,
             disabled: false,
           }))}
         />

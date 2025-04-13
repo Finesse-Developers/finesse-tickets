@@ -2,12 +2,14 @@ import { RequestHandler, Router } from "express";
 import {
   fetchServer,
   getAdminServers,
-  getCategories,
   getChannelIds,
-  getRoles,
+  getRolesAndCategories,
   updateServer,
 } from "../controllers/dashboard.controller";
-import { isAuthenticated } from "../middleware/auth.middleware";
+import {
+  isAuthenticated,
+  isUserAuthorizedForGuild,
+} from "../middleware/auth.middleware";
 
 const router = Router();
 
@@ -26,6 +28,7 @@ router.get(
 router.post(
   "/update-server/:id",
   isAuthenticated as RequestHandler,
+  isUserAuthorizedForGuild as RequestHandler,
   updateServer as RequestHandler
 );
 
@@ -36,11 +39,10 @@ router.get(
 );
 
 router.get(
-  "/get-categories/:id",
+  "/get-roles-categories/:id",
   isAuthenticated as RequestHandler,
-  getCategories as RequestHandler
+  isUserAuthorizedForGuild as RequestHandler,
+  getRolesAndCategories
 );
-
-router.get("/get-roles/:id", isAuthenticated as RequestHandler, getRoles);
 
 export default router;
