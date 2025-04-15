@@ -50,6 +50,9 @@ function CustomNumberTextField2({
         "&.Mui-focused .MuiFilledInput-root": {
           borderColor: "white", // Border color when focused
         },
+        "& .MuiInputLabel-root.Mui-focused": {
+          color: "white", // <-- Fixes the blue label on focus
+        },
       }}
     />
   );

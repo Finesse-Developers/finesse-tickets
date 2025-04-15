@@ -1,30 +1,30 @@
 import { TextField } from "@mui/material";
 import { memo } from "react";
 
-type CustomNumberTextFieldPropType = {
+type PropType = {
   id: string;
-  label: string;
-  value: number | "";
+  value: string;
+  placeholder: string;
   handleTextFieldChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-function CustomNumberTextField({
+function CustomTextField({
   id,
-  label,
   value,
   handleTextFieldChange,
-}: CustomNumberTextFieldPropType) {
+  placeholder,
+}: PropType) {
   return (
     <TextField
       id={id}
-      label={label}
-      type="number"
+      type="text"
       variant="outlined"
       slotProps={{
         inputLabel: {
           shrink: true,
         },
       }}
+      placeholder={placeholder}
       value={value}
       onChange={handleTextFieldChange}
       sx={{
@@ -43,9 +43,6 @@ function CustomNumberTextField({
             color: "white", // Text color inside the input
           },
         },
-        "& .MuiInputLabel-root": {
-          color: "white", // Label color when not focused
-        },
         "& .MuiInputLabel-root.Mui-focused": {
           color: "white", // <-- Fixes the blue label on focus
         },
@@ -54,4 +51,4 @@ function CustomNumberTextField({
   );
 }
 
-export default memo(CustomNumberTextField);
+export default memo(CustomTextField);
