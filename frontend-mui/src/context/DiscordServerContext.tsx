@@ -13,6 +13,7 @@ import {
   ChannelData,
   DiscordServerContextType,
   DiscordServerType,
+  EmojiType,
   MultiPanelType,
   PanelType,
 } from "../types/discordServer.types";
@@ -51,6 +52,7 @@ export const DiscordServerProvider = ({
   const [categories, setCategories] = useState<{ name: string; id: string }[]>(
     []
   );
+  const [emojis, setEmojis] = useState<EmojiType[]>([]);
   const nav = useNavigate();
 
   useEffect(() => {
@@ -115,6 +117,9 @@ export const DiscordServerProvider = ({
           ]);
         }
 
+        const emojisData = await getEmojis();
+        if (emojisData) setEmojis(emojisData);
+
         setDiscordServer(data.discordServer);
       } catch (error) {
         console.error(error);
@@ -134,6 +139,7 @@ export const DiscordServerProvider = ({
     setMultiPanels([]);
     setRoles([]);
     setCategories([]);
+    setEmojis([]);
     setError(null);
   }, []);
 
@@ -212,6 +218,22 @@ export const DiscordServerProvider = ({
     }
   }, [id]);
 
+  const getEmojis = useCallback(async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:6969/dashboard/get-all-emojis/${id}`,
+        { credentials: "include" }
+      );
+
+      const data: EmojiType[] = await res.json();
+      return data;
+    } catch (error) {
+      setError("Something went wrong in fetching emojis, please try again.");
+      console.log(error);
+      return;
+    }
+  }, [id]);
+
   const contextValue = useMemo(
     () => ({
       discordServer,
@@ -223,6 +245,7 @@ export const DiscordServerProvider = ({
       multiPanels,
       roles,
       categories,
+      emojis,
     }),
     [
       discordServer,
@@ -234,6 +257,7 @@ export const DiscordServerProvider = ({
       multiPanels,
       roles,
       categories,
+      emojis,
     ]
   );
 

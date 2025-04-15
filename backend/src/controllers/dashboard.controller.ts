@@ -253,3 +253,32 @@ export const filterAdminServers = (userGuildsData: UserGuildDataType[]) => {
 
   return mutualAdminGuilds;
 };
+
+export const getAllEmojisInServer = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const guild = client.guilds.cache.get(id);
+
+    const emojisData = guild?.emojis.cache;
+    if (!emojisData) {
+      res.status(404).json({
+        error: "There is something wrong with getting emojis in the server",
+      });
+      return;
+    }
+
+    const emojis = emojisData.map((e) => ({
+      id: e.id,
+      name: e.name || "",
+      url: e.url,
+    }));
+
+    res.json(emojis);
+    return;
+  } catch (error) {
+    console.error("Error getting emojis:", error);
+    res.status(500).json({ error: "Internal server error" });
+    return;
+  }
+};

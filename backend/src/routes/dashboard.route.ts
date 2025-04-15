@@ -2,6 +2,7 @@ import { RequestHandler, Router } from "express";
 import {
   fetchServer,
   getAdminServers,
+  getAllEmojisInServer,
   getChannelIds,
   getRolesAndCategories,
   updateServer,
@@ -43,6 +44,13 @@ router.get(
   isAuthenticated as RequestHandler,
   isUserAuthorizedForGuild as RequestHandler,
   getRolesAndCategories
+);
+
+router.get(
+  "/get-all-emojis/:id",
+  isAuthenticated as RequestHandler,
+  isUserAuthorizedForGuild as RequestHandler,
+  getAllEmojisInServer
 );
 
 export default router;

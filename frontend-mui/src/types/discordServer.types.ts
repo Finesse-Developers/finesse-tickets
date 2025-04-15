@@ -78,6 +78,12 @@ export type MultiPanelType = {
 
 export type ChannelData = Array<{ id: string; name: string }>;
 
+export type EmojiType = {
+  id: string;
+  name: string;
+  url: string;
+};
+
 export interface DiscordServerContextType {
   discordServer: DiscordServerType | null;
   getServer: (server: DiscordServerType) => void;
@@ -92,4 +98,5 @@ export interface DiscordServerContextType {
   multiPanels: MultiPanelType[];
   roles: { name: string; id: string }[];
   categories: { name: string; id: string }[];
+  emojis: EmojiType[];
 }
