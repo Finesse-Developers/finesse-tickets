@@ -19,6 +19,8 @@ import { PlainButton } from "../../components/PlainButton";
 import { useParams } from "react-router-dom";
 import { useDiscordServer } from "../../context/DiscordServerContext";
 
+const styles = { marginLeft: 2.5, marginBottom: 1.5, marginTop: 0.5 };
+
 export default function Settings() {
   const { id } = useParams();
   const { discordServer, channels } = useDiscordServer();
@@ -190,16 +192,11 @@ export default function Settings() {
         padding: 0,
       }}
     >
-      <Typography
-        variant="h3"
-        sx={{ color: "white" }}
-        margin={1.5}
-        marginTop={0.5}
-      >
+      <Typography variant="h3" sx={{ color: "white", ...styles }}>
         Settings
       </Typography>
 
-      <FormControl sx={{ margin: 1.5 }}>
+      <FormControl sx={styles}>
         <FormLabel
           id="ticketNameStyle"
           sx={{
@@ -226,7 +223,7 @@ export default function Settings() {
         </RadioGroup>
       </FormControl>
       <br />
-      <FormControl sx={{ margin: 1.5, width: "400px" }}>
+      <FormControl sx={{ ...styles, width: "400px" }}>
         <FormLabel
           htmlFor="ticketTranscriptChannelId"
           sx={{
@@ -247,7 +244,7 @@ export default function Settings() {
           items={channels}
         />
       </FormControl>
-      <FormControl sx={{ margin: 1.5, marginLeft: 5 }}>
+      <FormControl sx={{ ...styles, marginLeft: 5 }}>
         <FormLabel
           htmlFor="maxTicketPerUser"
           sx={{
@@ -269,7 +266,7 @@ export default function Settings() {
         />
       </FormControl>
       <br />
-      <FormGroup sx={{ margin: 1.5 }}>
+      <FormGroup sx={{ ...styles }}>
         <Typography
           sx={{
             color: "white",
@@ -300,7 +297,7 @@ export default function Settings() {
         </Box>
       </FormGroup>
       <br />
-      <FormGroup sx={{ margin: 1.5, marginTop: 0 }}>
+      <FormGroup sx={{ ...styles, marginTop: 0 }}>
         <Typography
           sx={{
             color: "white",
@@ -324,7 +321,7 @@ export default function Settings() {
       <br />
       <FormGroup
         sx={{
-          margin: 1.5,
+          ...styles,
           marginTop: 0,
           gap: 7,
           flexDirection: "row",

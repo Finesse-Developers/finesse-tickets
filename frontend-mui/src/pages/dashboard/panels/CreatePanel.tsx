@@ -1,7 +1,6 @@
 import {
   Box,
   CircularProgress,
-  Divider,
   FormControl,
   FormLabel,
   SelectChangeEvent,
@@ -20,6 +19,8 @@ import CustomServerEmojiSelect from "../../../components/CustomServerEmojiSelect
 import CustomSwitch from "../../../components/CustomSwitch";
 import DividerWithTitle from "../../../components/DividerWithTitle";
 import { PlainButton } from "../../../components/PlainButton";
+
+const styles = { marginLeft: 2.5, marginBottom: 1.5, marginTop: 0.5 };
 
 export default function CreatePanel() {
   const { roles, categories, channels, emojis } = useDiscordServer();
@@ -110,7 +111,7 @@ export default function CreatePanel() {
         Create Panel
       </Typography>
 
-      <FormControl sx={{ margin: 1.5, width: "300px" }}>
+      <FormControl sx={{ ...styles, width: "300px" }}>
         <FormLabel
           htmlFor="mentionOnOpen"
           sx={{
@@ -136,7 +137,7 @@ export default function CreatePanel() {
         />
       </FormControl>
 
-      <FormControl sx={{ margin: 1.5, width: "400px" }}>
+      <FormControl sx={{ ...styles, width: "400px" }}>
         <FormLabel
           htmlFor="ticketCategoryId"
           sx={{
@@ -164,7 +165,7 @@ export default function CreatePanel() {
         />
       </FormControl>
       <br />
-      <FormControl sx={{ margin: 1.5 }}>
+      <FormControl sx={{ ...styles }}>
         <FormLabel
           htmlFor="title"
           sx={{
@@ -186,7 +187,7 @@ export default function CreatePanel() {
         />
       </FormControl>
 
-      <FormControl sx={{ margin: 1.5, width: "400px" }}>
+      <FormControl sx={{ ...styles, width: "400px" }}>
         <FormLabel
           htmlFor="content"
           sx={{
@@ -209,7 +210,7 @@ export default function CreatePanel() {
         />
       </FormControl>
       <br />
-      <FormControl sx={{ margin: 1.5 }}>
+      <FormControl sx={{ ...styles }}>
         <FormLabel
           htmlFor="panelColor"
           sx={{
@@ -231,7 +232,7 @@ export default function CreatePanel() {
         />
       </FormControl>
 
-      <FormControl sx={{ margin: 1.5, width: "400px" }}>
+      <FormControl sx={{ ...styles, width: "400px" }}>
         <FormLabel
           htmlFor="pannelChannel"
           sx={{
@@ -259,7 +260,7 @@ export default function CreatePanel() {
         />
       </FormControl>
       <br />
-      <FormControl sx={{ margin: 1.5, width: "130px" }}>
+      <FormControl sx={{ ...styles, width: "130px" }}>
         <FormLabel
           htmlFor="buttonColor"
           sx={{
@@ -290,7 +291,7 @@ export default function CreatePanel() {
         />
       </FormControl>
 
-      <FormControl sx={{ margin: 1.5 }}>
+      <FormControl sx={{ ...styles }}>
         <FormLabel
           htmlFor="buttonText"
           sx={{
@@ -312,7 +313,7 @@ export default function CreatePanel() {
         />
       </FormControl>
 
-      <FormControl sx={{ margin: 1.5 }}>
+      <FormControl sx={{ ...styles }}>
         <FormLabel
           htmlFor="buttonEmoji"
           sx={{
@@ -353,7 +354,7 @@ export default function CreatePanel() {
         </Box>
       </FormControl>
       <br />
-      <FormControl sx={{ margin: 1.5, width: "400px" }}>
+      <FormControl sx={{ ...styles, width: "400px" }}>
         <FormLabel
           htmlFor="largeImageUrl"
           sx={{
@@ -375,7 +376,7 @@ export default function CreatePanel() {
         />
       </FormControl>
 
-      <FormControl sx={{ margin: 1.5, width: "400px" }}>
+      <FormControl sx={{ ...styles, width: "400px" }}>
         <FormLabel
           htmlFor="smallImageUrl"
           sx={{
@@ -399,7 +400,7 @@ export default function CreatePanel() {
 
       <DividerWithTitle title="Welcome Message" variant="h5" />
 
-      <FormControl sx={{ margin: 1.5 }}>
+      <FormControl sx={{ ...styles }}>
         <FormLabel
           htmlFor="welcomeMessageEmbedColor"
           sx={{
@@ -421,7 +422,7 @@ export default function CreatePanel() {
         />
       </FormControl>
 
-      <FormControl sx={{ margin: 1.5, width: "400px" }}>
+      <FormControl sx={{ ...styles, width: "400px" }}>
         <FormLabel
           htmlFor="welcomeTitle"
           sx={{
@@ -443,7 +444,7 @@ export default function CreatePanel() {
         />
       </FormControl>
 
-      <FormControl sx={{ margin: 1.5, width: "300px" }}>
+      <FormControl sx={{ ...styles, width: "300px" }}>
         <FormLabel
           htmlFor="welcomeTitleUrl"
           sx={{
@@ -465,7 +466,7 @@ export default function CreatePanel() {
         />
       </FormControl>
       <br />
-      <FormControl sx={{ margin: 1.5, width: "400px" }}>
+      <FormControl sx={{ ...styles, width: "400px" }}>
         <FormLabel
           htmlFor="welcomeLargeImageUrl"
           sx={{
@@ -486,7 +487,7 @@ export default function CreatePanel() {
           handleTextFieldChange={(e) => setWelcomeLargeImageUrl(e.target.value)}
         />
       </FormControl>
-      <FormControl sx={{ margin: 1.5, width: "400px" }}>
+      <FormControl sx={{ ...styles, width: "400px" }}>
         <FormLabel
           htmlFor="welcomeSmallImageUrl"
           sx={{
@@ -508,7 +509,7 @@ export default function CreatePanel() {
         />
       </FormControl>
       <br />
-      <FormControl sx={{ margin: 1.5, width: "250px" }}>
+      <FormControl sx={{ ...styles, width: "250px" }}>
         <FormLabel
           htmlFor="footerText"
           sx={{
@@ -529,7 +530,7 @@ export default function CreatePanel() {
           handleTextFieldChange={(e) => setFooterText(e.target.value)}
         />
       </FormControl>
-      <FormControl sx={{ margin: 1.5, width: "400px" }}>
+      <FormControl sx={{ ...styles, width: "400px" }}>
         <FormLabel
           htmlFor="footerIconUrl"
           sx={{
