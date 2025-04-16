@@ -12,10 +12,13 @@ import CustomSelect from "../../../components/CustomSelect";
 import CustomTextField from "../../../components/CustomTextField";
 import CustomTextArea from "../../../components/CustomTextArea";
 import CustomColorPicker from "../../../components/CustomColorPicker";
-import CustomEmojiSelect from "../../../components/CustomEmojiSelect";
+import CustomDefaultEmojiSelect from "../../../components/CustomDefaultEmojiSelect";
+import { EmojiType } from "../../../types/discordServer.types";
+import CustomServerEmojiSelect from "../../../components/CustomServerEmojiSelect";
+import CustomSwitch from "../../../components/CustomSwitch";
 
 export default function CreatePanel() {
-  const { roles, categories, channels } = useDiscordServer();
+  const { roles, categories, channels, emojis } = useDiscordServer();
   const [mentionOnOpen, setMentionOnOpen] = useState<string[]>([]);
   const [ticketCategoryId, setTicketCategoryId] = useState("");
   const [title, setTitle] = useState("");
@@ -26,10 +29,14 @@ export default function CreatePanel() {
     channelName: string;
   } | null>(null);
   const [buttonColor, setButtonColor] = useState<
-    "PRIMARY" | "SECONDARY" | "SUCCESS" | "DANGER" | "LINK"
+    "PRIMARY" | "SECONDARY" | "SUCCESS" | "DANGER"
   >("PRIMARY");
   const [buttonText, setButtonText] = useState("");
+  const [isCustomButton, setIsCustomButton] = useState(false);
   const [buttonEmoji, setButtonEmoji] = useState("");
+  const [customButtonEmoji, setCustomButtonEmoji] = useState<EmojiType | null>(
+    null
+  );
 
   const handlePanelChannelChange = useCallback((event: SelectChangeEvent) => {
     const selectedChannelId = event.target.value;
@@ -44,6 +51,24 @@ export default function CreatePanel() {
       });
     }
   }, []);
+
+  const handleEmojiSelectChange = useCallback(
+    (event: SelectChangeEvent<string>) => {
+      const parsed = JSON.parse(event.target.value) as EmojiType;
+      setCustomButtonEmoji(parsed);
+    },
+    []
+  );
+
+  const handleSwitchChange = useCallback(
+    (
+      event: React.ChangeEvent<HTMLInputElement>,
+      setter: React.Dispatch<React.SetStateAction<boolean>>
+    ) => {
+      setter(event.target.checked);
+    },
+    []
+  );
 
   return (
     <Box
@@ -220,7 +245,7 @@ export default function CreatePanel() {
         />
       </FormControl>
       <br />
-      <FormControl sx={{ margin: 1.5, width: "400px" }}>
+      <FormControl sx={{ margin: 1.5, width: "130px" }}>
         <FormLabel
           htmlFor="buttonColor"
           sx={{
@@ -239,20 +264,14 @@ export default function CreatePanel() {
           value={buttonColor}
           handleSelectChange={(e) =>
             setButtonColor(
-              e.target.value as
-                | "PRIMARY"
-                | "SECONDARY"
-                | "SUCCESS"
-                | "DANGER"
-                | "LINK"
+              e.target.value as "PRIMARY" | "SECONDARY" | "SUCCESS" | "DANGER"
             )
           }
           items={[
-            { name: "Primary", value: "PRIMARY", disabled: false },
-            { name: "Secondary", value: "SECONDARY", disabled: false },
-            { name: "Success", value: "SUCCESS", disabled: false },
-            { name: "Danger", value: "DANGER", disabled: false },
-            { name: "Link", value: "LINK", disabled: false },
+            { name: "Blue", value: "PRIMARY", disabled: false },
+            { name: "Grey", value: "SECONDARY", disabled: false },
+            { name: "Green", value: "SUCCESS", disabled: false },
+            { name: "Red", value: "DANGER", disabled: false },
           ]}
         />
       </FormControl>
@@ -293,7 +312,31 @@ export default function CreatePanel() {
           Button emoji
         </FormLabel>
 
-        <CustomEmojiSelect value={buttonEmoji} setValue={setButtonEmoji} />
+        <Box display={"flex"} alignItems={"center"} gap={1}>
+          <Box display={"flex"} alignItems={"center"} gap={1}>
+            <Typography>Custom emoji</Typography>
+            <CustomSwitch
+              checked={isCustomButton}
+              handleSwitchChange={handleSwitchChange}
+              label=""
+              stateAction={setIsCustomButton}
+            />
+          </Box>
+
+          {isCustomButton ? (
+            <CustomServerEmojiSelect
+              id="buttonEmoji"
+              value={customButtonEmoji}
+              items={emojis}
+              handleSelectChange={handleEmojiSelectChange}
+            />
+          ) : (
+            <CustomDefaultEmojiSelect
+              value={buttonEmoji}
+              setValue={setButtonEmoji}
+            />
+          )}
+        </Box>
       </FormControl>
     </Box>
   );
