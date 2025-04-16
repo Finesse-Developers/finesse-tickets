@@ -1,5 +1,7 @@
 import {
   Box,
+  CircularProgress,
+  Divider,
   FormControl,
   FormLabel,
   SelectChangeEvent,
@@ -16,6 +18,8 @@ import CustomDefaultEmojiSelect from "../../../components/CustomDefaultEmojiSele
 import { EmojiType } from "../../../types/discordServer.types";
 import CustomServerEmojiSelect from "../../../components/CustomServerEmojiSelect";
 import CustomSwitch from "../../../components/CustomSwitch";
+import DividerWithTitle from "../../../components/DividerWithTitle";
+import { PlainButton } from "../../../components/PlainButton";
 
 export default function CreatePanel() {
   const { roles, categories, channels, emojis } = useDiscordServer();
@@ -37,6 +41,16 @@ export default function CreatePanel() {
   const [customButtonEmoji, setCustomButtonEmoji] = useState<EmojiType | null>(
     null
   );
+  const [largeImageUrl, setLargeImageUrl] = useState("");
+  const [smallImageUrl, setSmallImageUrl] = useState("");
+  const [welcomeColor, setWelcomeColor] = useState("#FFFFFF");
+  const [welcomeTitle, setWelcomeTitle] = useState("");
+  const [welcomeTitleUrl, setWelcomeTitleUrl] = useState("");
+  const [welcomeLargeImageUrl, setWelcomeLargeImageUrl] = useState("");
+  const [welcomeSmallImageUrl, setWelcomeSmallImageUrl] = useState("");
+  const [footerText, setFooterText] = useState("");
+  const [footerIconUrl, setFooterIconUrl] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   const handlePanelChannelChange = useCallback((event: SelectChangeEvent) => {
     const selectedChannelId = event.target.value;
@@ -338,6 +352,228 @@ export default function CreatePanel() {
           )}
         </Box>
       </FormControl>
+      <br />
+      <FormControl sx={{ margin: 1.5, width: "400px" }}>
+        <FormLabel
+          htmlFor="largeImageUrl"
+          sx={{
+            color: "white",
+            mb: 1,
+            "&.Mui-focused": {
+              color: "white",
+            },
+          }}
+        >
+          Large image url
+        </FormLabel>
+
+        <CustomTextField
+          id="largeImageUrl"
+          value={largeImageUrl}
+          placeholder="https://example/image.png"
+          handleTextFieldChange={(e) => setLargeImageUrl(e.target.value)}
+        />
+      </FormControl>
+
+      <FormControl sx={{ margin: 1.5, width: "400px" }}>
+        <FormLabel
+          htmlFor="smallImageUrl"
+          sx={{
+            color: "white",
+            mb: 1,
+            "&.Mui-focused": {
+              color: "white",
+            },
+          }}
+        >
+          Small image url
+        </FormLabel>
+
+        <CustomTextField
+          id="smallImageUrl"
+          value={smallImageUrl}
+          placeholder="https://example/image.png"
+          handleTextFieldChange={(e) => setSmallImageUrl(e.target.value)}
+        />
+      </FormControl>
+
+      <DividerWithTitle title="Welcome Message" variant="h5" />
+
+      <FormControl sx={{ margin: 1.5 }}>
+        <FormLabel
+          htmlFor="welcomeMessageEmbedColor"
+          sx={{
+            color: "white",
+            mb: 1,
+            "&.Mui-focused": {
+              color: "white",
+            },
+          }}
+        >
+          Embed color
+        </FormLabel>
+
+        <CustomColorPicker
+          value={welcomeColor}
+          handleChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            setWelcomeColor(event.target.value)
+          }
+        />
+      </FormControl>
+
+      <FormControl sx={{ margin: 1.5, width: "400px" }}>
+        <FormLabel
+          htmlFor="welcomeTitle"
+          sx={{
+            color: "white",
+            mb: 1,
+            "&.Mui-focused": {
+              color: "white",
+            },
+          }}
+        >
+          Title
+        </FormLabel>
+
+        <CustomTextField
+          id="welcomeTitle"
+          value={welcomeTitle}
+          placeholder="Embed Title"
+          handleTextFieldChange={(e) => setWelcomeTitle(e.target.value)}
+        />
+      </FormControl>
+
+      <FormControl sx={{ margin: 1.5, width: "300px" }}>
+        <FormLabel
+          htmlFor="welcomeTitleUrl"
+          sx={{
+            color: "white",
+            mb: 1,
+            "&.Mui-focused": {
+              color: "white",
+            },
+          }}
+        >
+          Title url
+        </FormLabel>
+
+        <CustomTextField
+          id="welcomeTitleUrl"
+          value={welcomeTitleUrl}
+          placeholder="https://example.com"
+          handleTextFieldChange={(e) => setWelcomeTitleUrl(e.target.value)}
+        />
+      </FormControl>
+      <br />
+      <FormControl sx={{ margin: 1.5, width: "400px" }}>
+        <FormLabel
+          htmlFor="welcomeLargeImageUrl"
+          sx={{
+            color: "white",
+            mb: 1,
+            "&.Mui-focused": {
+              color: "white",
+            },
+          }}
+        >
+          Large image url
+        </FormLabel>
+
+        <CustomTextField
+          id="welcomeLargeImageUrl"
+          value={welcomeLargeImageUrl}
+          placeholder="https://example.com/image.png"
+          handleTextFieldChange={(e) => setWelcomeLargeImageUrl(e.target.value)}
+        />
+      </FormControl>
+      <FormControl sx={{ margin: 1.5, width: "400px" }}>
+        <FormLabel
+          htmlFor="welcomeSmallImageUrl"
+          sx={{
+            color: "white",
+            mb: 1,
+            "&.Mui-focused": {
+              color: "white",
+            },
+          }}
+        >
+          Large image url
+        </FormLabel>
+
+        <CustomTextField
+          id="welcomeSmallImageUrl"
+          value={welcomeSmallImageUrl}
+          placeholder="https://example.com/image.png"
+          handleTextFieldChange={(e) => setWelcomeSmallImageUrl(e.target.value)}
+        />
+      </FormControl>
+      <br />
+      <FormControl sx={{ margin: 1.5, width: "250px" }}>
+        <FormLabel
+          htmlFor="footerText"
+          sx={{
+            color: "white",
+            mb: 1,
+            "&.Mui-focused": {
+              color: "white",
+            },
+          }}
+        >
+          Footer text
+        </FormLabel>
+
+        <CustomTextField
+          id="footerText"
+          value={footerText}
+          placeholder="Footer Text"
+          handleTextFieldChange={(e) => setFooterText(e.target.value)}
+        />
+      </FormControl>
+      <FormControl sx={{ margin: 1.5, width: "400px" }}>
+        <FormLabel
+          htmlFor="footerIconUrl"
+          sx={{
+            color: "white",
+            mb: 1,
+            "&.Mui-focused": {
+              color: "white",
+            },
+          }}
+        >
+          Footer icon url
+        </FormLabel>
+
+        <CustomTextField
+          id="footerIconUrl"
+          value={footerIconUrl}
+          placeholder="https://example.com/image.png"
+          handleTextFieldChange={(e) => setFooterIconUrl(e.target.value)}
+        />
+      </FormControl>
+      <br />
+      <Box
+        sx={{
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginTop: 2,
+          marginBottom: 3,
+        }}
+      >
+        <PlainButton
+          style={{
+            width: "80%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            position: "relative",
+          }}
+          disabled={isSaving}
+        >
+          {isSaving ? <CircularProgress color="inherit" size={24} /> : "CREATE"}
+        </PlainButton>
+      </Box>
     </Box>
   );
 }
