@@ -50,5 +50,9 @@ app.get("/", (_req: Request, res: Response) => {
   res.send(200);
   return;
 });
+app.get("*", (_req, res) => {
+  res.redirect(`${process.env.FRONTEND_URL}/error`);
+  return;
+});
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

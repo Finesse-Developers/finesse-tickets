@@ -12,6 +12,7 @@ import CustomSelect from "../../../components/CustomSelect";
 import CustomTextField from "../../../components/CustomTextField";
 import CustomTextArea from "../../../components/CustomTextArea";
 import CustomColorPicker from "../../../components/CustomColorPicker";
+import CustomEmojiSelect from "../../../components/CustomEmojiSelect";
 
 export default function CreatePanel() {
   const { roles, categories, channels } = useDiscordServer();
@@ -28,6 +29,7 @@ export default function CreatePanel() {
     "PRIMARY" | "SECONDARY" | "SUCCESS" | "DANGER" | "LINK"
   >("PRIMARY");
   const [buttonText, setButtonText] = useState("");
+  const [buttonEmoji, setButtonEmoji] = useState("");
 
   const handlePanelChannelChange = useCallback((event: SelectChangeEvent) => {
     const selectedChannelId = event.target.value;
@@ -275,6 +277,23 @@ export default function CreatePanel() {
           placeholder="Button Text"
           handleTextFieldChange={(e) => setButtonText(e.target.value)}
         />
+      </FormControl>
+
+      <FormControl sx={{ margin: 1.5 }}>
+        <FormLabel
+          htmlFor="buttonEmoji"
+          sx={{
+            color: "white",
+            mb: 1,
+            "&.Mui-focused": {
+              color: "white",
+            },
+          }}
+        >
+          Button emoji
+        </FormLabel>
+
+        <CustomEmojiSelect value={buttonEmoji} setValue={setButtonEmoji} />
       </FormControl>
     </Box>
   );
