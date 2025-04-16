@@ -20,6 +20,19 @@ import { useParams } from "react-router-dom";
 import { useDiscordServer } from "../../context/DiscordServerContext";
 
 const styles = { marginLeft: 2.5, marginBottom: 1.5, marginTop: 0.5 };
+const parentStyle = {
+  width: "75%",
+  height: "95%",
+  boxSizing: "border-box",
+  borderRadius: 2,
+  border: "2px solid white",
+  backgroundColor: "transparent",
+  color: "white",
+  alignSelf: "flex-start",
+  marginLeft: 5,
+  marginTop: 1.5,
+  padding: 0,
+};
 
 export default function Settings() {
   const { id } = useParams();
@@ -52,6 +65,7 @@ export default function Settings() {
   >("");
 
   const [isSaving, setIsSaving] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     async function initializeValues() {
@@ -149,7 +163,7 @@ export default function Settings() {
     try {
       setIsSaving(true);
       const res = await fetch(
-        `http://localhost:6969/dashboard/update-server/${id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/dashboard/update-server/${id}`,
         {
           method: "POST",
           headers: {
@@ -161,6 +175,7 @@ export default function Settings() {
       );
 
       if (!res.ok) {
+        setErrorMessage("Failed to update server settings");
         throw new Error("Failed to update server settings");
       }
 
@@ -170,28 +185,33 @@ export default function Settings() {
       // console.log(data);
       if (data) window.location.reload();
     } catch (error) {
+      setErrorMessage("Failed to update server settings");
       console.error("Error updating settings:", error);
     } finally {
       setIsSaving(false);
     }
   };
 
+  if (!isSaving && errorMessage) {
+    return (
+      <Box
+        sx={{
+          ...parentStyle,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+        }}
+      >
+        <Typography variant="h5" color="white">
+          {errorMessage}
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
-    <Box
-      sx={{
-        width: "75%",
-        height: "95%",
-        boxSizing: "border-box",
-        borderRadius: 2,
-        border: "2px solid white",
-        backgroundColor: "transparent",
-        color: "white",
-        alignSelf: "flex-start",
-        marginLeft: 5,
-        marginTop: 1.5,
-        padding: 0,
-      }}
-    >
+    <Box sx={parentStyle}>
       <Typography variant="h3" sx={{ color: "white", ...styles }}>
         Settings
       </Typography>

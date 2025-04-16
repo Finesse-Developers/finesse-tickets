@@ -41,10 +41,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setLoading(true);
         // Parallelize the fetch calls
         const [userSessionRes, userRes] = await Promise.all([
-          fetch(`http://localhost:6969/auth/check-session`, {
+          fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/check-session`, {
             credentials: "include",
           }),
-          fetch(`http://localhost:6969/auth/me`, {
+          fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/me`, {
             credentials: "include",
           }),
         ]);
@@ -81,10 +81,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       document.location.href = "/";
       setLoading(true);
 
-      const res = await fetch(`http://localhost:6969/auth/logout`, {
-        method: "post",
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/auth/logout`,
+        {
+          method: "post",
+          credentials: "include",
+        }
+      );
 
       if (res.ok) setUser(null);
     } catch (error) {

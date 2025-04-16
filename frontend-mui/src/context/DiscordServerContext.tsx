@@ -67,7 +67,7 @@ export const DiscordServerProvider = ({
         resetState();
 
         const res = await fetch(
-          `http://localhost:6969/dashboard/fetch-server/${id}`,
+          `${import.meta.env.VITE_BACKEND_URL}/dashboard/fetch-server/${id}`,
           { credentials: "include" }
         );
 
@@ -152,7 +152,7 @@ export const DiscordServerProvider = ({
   > => {
     try {
       const res = await fetch(
-        `http://localhost:6969/dashboard/get-channelIds/${id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/dashboard/get-channelIds/${id}`,
         { credentials: "include" }
       );
       if (!res.ok) {
@@ -178,9 +178,12 @@ export const DiscordServerProvider = ({
     | undefined
   > => {
     try {
-      const res = await fetch(`http://localhost:6969/panel/get-panels/${id}`, {
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/panel/get-panels/${id}`,
+        {
+          credentials: "include",
+        }
+      );
       if (!res.ok) {
         setError("Something went wrong in fetching panels, please try again.");
         return;
@@ -200,7 +203,9 @@ export const DiscordServerProvider = ({
   const getRolesAndCategories = useCallback(async () => {
     try {
       const res = await fetch(
-        `http://localhost:6969/dashboard/get-roles-categories/${id}`,
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/dashboard/get-roles-categories/${id}`,
         { credentials: "include" }
       );
 
@@ -221,7 +226,7 @@ export const DiscordServerProvider = ({
   const getEmojis = useCallback(async () => {
     try {
       const res = await fetch(
-        `http://localhost:6969/dashboard/get-all-emojis/${id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/dashboard/get-all-emojis/${id}`,
         { credentials: "include" }
       );
 

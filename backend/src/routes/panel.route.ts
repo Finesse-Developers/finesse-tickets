@@ -14,7 +14,7 @@ panelRoutes.get(
   getPanels as RequestHandler
 );
 panelRoutes.post(
-  "/create",
+  "/create/:id",
   isAuthenticated as RequestHandler,
   isUserAuthorizedForGuild as RequestHandler,
   createPanel as RequestHandler

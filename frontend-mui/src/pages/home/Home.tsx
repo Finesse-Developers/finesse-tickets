@@ -21,13 +21,17 @@ export default function Home() {
       </Typography>
       <Box sx={{ mt: 4, gap: 5, display: "flex", justifyContent: "center" }}>
         {!user && (
-          <Link to={`http://localhost:6969/auth`}>
+          <Link to={`${import.meta.env.VITE_BACKEND_URL}/auth`}>
             <PlainButton>
               <Typography>Login</Typography>
             </PlainButton>
           </Link>
         )}
-        <Link to={`${!user ? "http://localhost:6969/auth" : "/dashboard"}`}>
+        <Link
+          to={`${
+            !user ? `${import.meta.env.VITE_BACKEND_URL}/auth` : "/dashboard"
+          }`}
+        >
           <PlainButton>
             <Typography>Dashboard</Typography>
           </PlainButton>

@@ -271,7 +271,7 @@ export const getAllEmojisInServer = async (req: Request, res: Response) => {
     const emojis = emojisData.map((e) => ({
       id: e.id,
       name: e.name || "",
-      url: e.url,
+      url: e.imageURL(),
     }));
 
     res.json(emojis);

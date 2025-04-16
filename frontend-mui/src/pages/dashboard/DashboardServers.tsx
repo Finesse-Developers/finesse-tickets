@@ -34,9 +34,12 @@ export default function DashboardServers() {
       setIsLoading(true);
       setDashboardMessage(null);
       try {
-        const res = await fetch(`http://localhost:6969/dashboard`, {
-          credentials: "include",
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/dashboard`,
+          {
+            credentials: "include",
+          }
+        );
 
         redirectToHomeIfNotAuth(res, nav);
 

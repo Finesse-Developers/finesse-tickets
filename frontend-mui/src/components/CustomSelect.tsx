@@ -6,6 +6,7 @@ type CustomSelectPropType = {
   handleSelectChange: (event: SelectChangeEvent) => void;
   items: { name: string; value: string; disabled: boolean }[];
   id: string;
+  placeholder?: string;
 };
 
 function CustomSelect({
@@ -13,6 +14,7 @@ function CustomSelect({
   handleSelectChange,
   items,
   id,
+  placeholder = "Please select transcript channel",
 }: CustomSelectPropType) {
   return (
     <Select
@@ -62,7 +64,7 @@ function CustomSelect({
       }}
     >
       <MenuItem value="" disabled>
-        Please select transcript channel
+        {placeholder}
       </MenuItem>
       {items.map((item, i) => (
         <MenuItem key={i} value={item.value} disabled={item.disabled}>

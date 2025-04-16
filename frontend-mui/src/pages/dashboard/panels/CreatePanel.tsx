@@ -19,11 +19,28 @@ import CustomServerEmojiSelect from "../../../components/CustomServerEmojiSelect
 import CustomSwitch from "../../../components/CustomSwitch";
 import DividerWithTitle from "../../../components/DividerWithTitle";
 import { PlainButton } from "../../../components/PlainButton";
+import { useParams } from "react-router-dom";
 
 const styles = { marginLeft: 2.5, marginBottom: 1.5, marginTop: 0.5 };
+const parentStyle = {
+  width: "75%",
+  height: "95%",
+  boxSizing: "border-box",
+  borderRadius: 2,
+  border: "2px solid white",
+  backgroundColor: "transparent",
+  color: "white",
+  alignSelf: "flex-start",
+  marginLeft: 5,
+  marginTop: 1.5,
+  padding: 0,
+  overflowY: "auto",
+};
 
 export default function CreatePanel() {
-  const { roles, categories, channels, emojis } = useDiscordServer();
+  const { id } = useParams();
+  const { roles, categories, channels, emojis, discordServer } =
+    useDiscordServer();
   const [mentionOnOpen, setMentionOnOpen] = useState<string[]>([]);
   const [ticketCategoryId, setTicketCategoryId] = useState("");
   const [title, setTitle] = useState("");
@@ -47,11 +64,85 @@ export default function CreatePanel() {
   const [welcomeColor, setWelcomeColor] = useState("#FFFFFF");
   const [welcomeTitle, setWelcomeTitle] = useState("");
   const [welcomeTitleUrl, setWelcomeTitleUrl] = useState("");
+  const [welcomeContent, setWelcomeContent] = useState("");
   const [welcomeLargeImageUrl, setWelcomeLargeImageUrl] = useState("");
   const [welcomeSmallImageUrl, setWelcomeSmallImageUrl] = useState("");
   const [footerText, setFooterText] = useState("");
   const [footerIconUrl, setFooterIconUrl] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleCreate = async () => {
+    try {
+      setIsSaving(true);
+
+      const hasMissingInputs =
+        [discordServer?.serverId, panelChannel, title, welcomeTitle].some(
+          (val) => val === "" || val === undefined || val === null
+        ) ||
+        (welcomeTitle === "" && welcomeTitleUrl !== "") ||
+        (footerText === "" && footerIconUrl !== "");
+
+      if (hasMissingInputs) {
+        setErrorMessage("There are missing inputs");
+        return;
+      }
+
+      const payload = {
+        serverId: discordServer?.serverId || "",
+        mentionOnOpenRoleIds: mentionOnOpen,
+        ticketCategoryId,
+        panelTitle: title,
+        content,
+        panelColor,
+        channelId: panelChannel?.channelId || "",
+        channelName: panelChannel?.channelId || "",
+        buttonColor,
+        buttonEmoji: isCustomButton
+          ? `<:${customButtonEmoji?.name || ""}:${customButtonEmoji?.id || ""}>`
+          : buttonEmoji,
+        buttonText,
+        panelLargeImageUrl: largeImageUrl,
+        panelSmallImageUrl: smallImageUrl,
+        welcomeEmbedColor: welcomeColor,
+        welcomeTitle,
+        welcomeTitleUrl,
+        welcomeContent,
+        welcomeLargeImageUrl,
+        welcomeSmallImageUrl,
+        welcomeFooterText: footerText,
+        welcomeFooterIconUrl: footerIconUrl,
+      };
+
+      console.log(payload);
+
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/panel/create/${id}`,
+        {
+          method: "post",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+          credentials: "include",
+        }
+      );
+
+      if (!res.ok) {
+        setErrorMessage("Failed to create panel for the server.");
+        throw new Error("Failed to create panel for the server.");
+      }
+
+      const data = await res.json();
+      // console.log(data);
+      if (data) window.location.reload();
+    } catch (error) {
+      setErrorMessage("Failed to create panel for the server.");
+      console.error(error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handlePanelChannelChange = useCallback((event: SelectChangeEvent) => {
     const selectedChannelId = event.target.value;
@@ -85,23 +176,26 @@ export default function CreatePanel() {
     []
   );
 
+  // if (!isSaving && errorMessage) {
+  //   return (
+  //     <Box
+  //       sx={{
+  //         ...parentStyle,
+  //         display: "flex",
+  //         alignItems: "center",
+  //         justifyContent: "center",
+  //         textAlign: "center",
+  //       }}
+  //     >
+  //       <Typography variant="h5" color="white">
+  //         {errorMessage}
+  //       </Typography>
+  //     </Box>
+  //   );
+  // }
+
   return (
-    <Box
-      sx={{
-        width: "75%",
-        height: "95%",
-        boxSizing: "border-box",
-        borderRadius: 2,
-        border: "2px solid white",
-        backgroundColor: "transparent",
-        color: "white",
-        alignSelf: "flex-start",
-        marginLeft: 5,
-        marginTop: 1.5,
-        padding: 0,
-        overflowY: "auto",
-      }}
-    >
+    <Box sx={parentStyle}>
       <Typography
         variant="h3"
         sx={{ color: "white" }}
@@ -154,6 +248,7 @@ export default function CreatePanel() {
         <CustomSelect
           id="ticketCategoryId"
           value={ticketCategoryId}
+          placeholder="Select which category will tickets be created"
           handleSelectChange={(event: SelectChangeEvent) =>
             setTicketCategoryId(event.target.value as string)
           }
@@ -243,12 +338,13 @@ export default function CreatePanel() {
             },
           }}
         >
-          Ticket category
+          Ticket channel
         </FormLabel>
 
         <CustomSelect
           id="pannelChannel"
           value={panelChannel?.channelId || ""}
+          placeholder="Please select where ticket panel will be sent"
           handleSelectChange={handlePanelChannelChange}
           items={channels
             .filter((c) => c.value !== "none")
@@ -444,6 +540,31 @@ export default function CreatePanel() {
         />
       </FormControl>
 
+      <br />
+
+      <FormControl sx={{ ...styles, width: "400px" }}>
+        <FormLabel
+          htmlFor="welcomeContent"
+          sx={{
+            color: "white",
+            mb: 1,
+            "&.Mui-focused": {
+              color: "white",
+            },
+          }}
+        >
+          Welcome message content
+        </FormLabel>
+
+        <CustomTextArea
+          value={welcomeContent}
+          id="welcomeContent"
+          placeholder="Welcome content here..."
+          handleTextFieldChange={(e) => setWelcomeContent(e.target.value)}
+          rows={4}
+        />
+      </FormControl>
+
       <FormControl sx={{ ...styles, width: "300px" }}>
         <FormLabel
           htmlFor="welcomeTitleUrl"
@@ -465,6 +586,7 @@ export default function CreatePanel() {
           handleTextFieldChange={(e) => setWelcomeTitleUrl(e.target.value)}
         />
       </FormControl>
+
       <br />
       <FormControl sx={{ ...styles, width: "400px" }}>
         <FormLabel
@@ -571,6 +693,7 @@ export default function CreatePanel() {
             position: "relative",
           }}
           disabled={isSaving}
+          onClick={handleCreate}
         >
           {isSaving ? <CircularProgress color="inherit" size={24} /> : "CREATE"}
         </PlainButton>

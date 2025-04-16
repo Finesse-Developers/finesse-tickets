@@ -38,13 +38,31 @@ export const createPanel = async (req: CustomRequest, res: Response) => {
       welcomeEmbedColor,
       welcomeTitle,
       welcomeTitleUrl,
+      welcomeContent,
       welcomeLargeImageUrl,
       welcomeSmallImageUrl,
       welcomeFooterText,
       welcomeFooterIconUrl,
     } = req.body;
 
-    const newPanel = await PanelModel.create({
+    const hasMissingInputs =
+      [
+        serverId,
+        channelId,
+        channelName,
+        panelTitle,
+        buttonEmoji,
+        welcomeTitle,
+      ].some((val) => val === "" || val === null) ||
+      (welcomeTitle === "" && welcomeTitleUrl !== "") ||
+      (welcomeFooterText === "" && welcomeFooterIconUrl !== "");
+
+    if (hasMissingInputs) {
+      res.status(400).json({ error: "Missing inputs" });
+      return;
+    }
+
+    const payload = {
       serverId,
       mentionOnOpenRoleIds,
       ticketCategoryId,
@@ -62,12 +80,17 @@ export const createPanel = async (req: CustomRequest, res: Response) => {
         embedColor: welcomeEmbedColor,
         title: welcomeTitle,
         titleUrl: welcomeTitleUrl,
+        content: welcomeContent,
         largeImageUrl: welcomeLargeImageUrl,
         smallImageUrl: welcomeSmallImageUrl,
         footerText: welcomeFooterText,
         footerIconUrl: welcomeFooterIconUrl,
       },
-    });
+    };
+
+    console.log(payload);
+
+    const newPanel = await PanelModel.create(payload);
 
     res.json(newPanel);
     return;

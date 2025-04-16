@@ -18,6 +18,7 @@ export type PanelType = {
     embedColor: string;
     title: string;
     titleUrl: string | null;
+    content: string;
     largeImageUrl: string | null;
     smallImageUrl: string | null;
     footerText: string | null;
@@ -45,6 +46,7 @@ const panelSchema = new mongoose.Schema({
   welcomeMessage: {
     embedColor: { type: String, required: true },
     title: { type: String, required: true },
+    content: { type: String, default: "" },
     titleUrl: { type: String, default: null },
     largeImageUrl: { type: String, default: null },
     smallImageUrl: { type: String, default: null },
