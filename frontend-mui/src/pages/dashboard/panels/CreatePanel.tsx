@@ -96,7 +96,7 @@ export default function CreatePanel() {
         content,
         panelColor,
         channelId: panelChannel?.channelId || "",
-        channelName: panelChannel?.channelId || "",
+        channelName: panelChannel?.channelName || "",
         buttonColor,
         buttonEmoji: isCustomButton
           ? `<:${customButtonEmoji?.name || ""}:${customButtonEmoji?.id || ""}>`

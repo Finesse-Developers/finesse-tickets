@@ -51,7 +51,7 @@ function CustomTable({ rows, type }: PropType) {
           >
             <TableCell align="left">Channel</TableCell>
             <TableCell align="left">Panel Title</TableCell>
-            <TableCell align="right"></TableCell>
+            <TableCell align="right" sx={{ width: "250px" }}></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -65,13 +65,42 @@ function CustomTable({ rows, type }: PropType) {
                 }}
               >
                 <TableCell align="left">{row.channelName}</TableCell>
-                <TableCell align="left">{row.panelTitle}</TableCell>
-                <TableCell align="right">
-                  <PlainButton>SEND</PlainButton>
-                  <Link to={`/dashboard/${id}/${type}/${row.id}/edit`}>
-                    <PlainButton>EDIT</PlainButton>
-                  </Link>
-                  <PlainButton>DELETE</PlainButton>
+                <TableCell
+                  align="left"
+                  sx={{
+                    whiteSpace: "normal", // allow wrapping
+                    wordWrap: "break-word", // wrap long words if needed
+                  }}
+                >
+                  {row.panelTitle}
+                </TableCell>
+                <TableCell
+                  align="right"
+                  sx={{
+                    paddingRight: 2,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: 1,
+                      flexWrap: "nowrap", // or "nowrap" if you want to force single line
+                    }}
+                  >
+                    <PlainButton size="small" sx={{ fontWeight: 600 }}>
+                      SEND
+                    </PlainButton>
+                    <Link to={`/dashboard/${id}/${type}/${row.id}/edit`}>
+                      <PlainButton size="small" sx={{ fontWeight: 600 }}>
+                        EDIT
+                      </PlainButton>
+                    </Link>
+                    <PlainButton size="small" sx={{ fontWeight: 600 }}>
+                      DELETE
+                    </PlainButton>
+                  </Box>
                 </TableCell>
               </TableRow>
             ))

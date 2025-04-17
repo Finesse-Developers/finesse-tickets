@@ -5,10 +5,10 @@ import MultiPanelModel from "../models/MultiPanel.model";
 
 export const getPanels = async (req: CustomRequest, res: Response) => {
   try {
-    const { serverId } = req.params;
+    const { id } = req.params;
 
-    const panels = await PanelModel.find({ serverId });
-    const multiPanels = await MultiPanelModel.find({ serverId });
+    const panels = await PanelModel.find({ serverId: id });
+    const multiPanels = await MultiPanelModel.find({ serverId: id });
 
     res.json({ panels, multiPanels });
     return;

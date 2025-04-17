@@ -1,23 +1,24 @@
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 
-export const PlainButton = styled(Button)(() => ({
-  backgroundColor: "white", // White background
-  color: "black", // Black text color
-  padding: "6px 12px", // Padding around the text
-  textTransform: "none", // No uppercase
-  fontWeight: "500", // Medium weight font
-  borderRadius: "8px", // Rounded corners
-  border: "2px solid white", // Black border for the button
+export const PlainButton = styled(Button)(({ size }) => ({
+  backgroundColor: "white",
+  color: "black",
+  padding: size === "small" ? "4px 8px" : "6px 12px",
+  fontSize: size === "small" ? "0.75rem" : "1rem",
+  textTransform: "none",
+  fontWeight: "500",
+  borderRadius: "8px",
+  border: "2px solid white",
   "&:hover": {
-    backgroundColor: "rgba(255, 255, 255, 0)", // Lighter white for hover
+    backgroundColor: "rgba(255, 255, 255, 0)",
     color: "white",
   },
   "&:focus": {
-    outline: "none", // No outline on focus
+    outline: "none",
   },
   ":disabled": {
-    backgroundColor: "rgba(255, 255, 255, 0)", // Lighter white for hover
+    backgroundColor: "rgba(255, 255, 255, 0)",
     color: "white",
   },
 }));

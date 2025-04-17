@@ -90,6 +90,7 @@ export const DiscordServerProvider = ({
         const panelData = await getPanels();
 
         if (panelData) {
+          console.log(panelData);
           setPanels(panelData.panels);
           setMultiPanels(panelData.multiPanels);
         }
