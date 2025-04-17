@@ -11,6 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { PlainButton } from "../../components/PlainButton";
 import { redirectToHomeIfNotAuth } from "../../guards/Auth.ProtectedRoutes";
 import DashboardCard from "../../components/DashboardCard";
+import { useNotification } from "../../context/notification/NotificationContext";
 
 export type AdminServerType = {
   id: string;
@@ -19,6 +20,7 @@ export type AdminServerType = {
 };
 
 export default function DashboardServers() {
+  const { notify } = useNotification();
   const { user, loading } = useAuth();
   const hasFetchedRef = useRef(false);
   const [adminServers, setAdminServers] = useState<AdminServerType[]>([]);
@@ -51,6 +53,7 @@ export default function DashboardServers() {
         setAdminServers(data);
       } catch (error) {
         console.log(error);
+        notify("Something went wrong fetching discord servers", "error");
         setDashboardMessage(
           "Something went wrong fetching discord servers, please try again or contact support in our discord server."
         );

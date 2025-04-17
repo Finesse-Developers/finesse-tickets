@@ -5,6 +5,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { useNotification } from "./notification/NotificationContext";
 
 type AuthUserType = {
   discordId: string;
@@ -31,6 +32,7 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const { notify } = useNotification();
   const [user, setUser] = useState<AuthUserType | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -60,8 +62,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           }
         }
 
+        notify("You are not logged in.", "info");
         setUser(null);
       } catch (error) {
+        notify("Failed to check session", "error");
         console.error("Failed to check session", error);
         setUser(null);
         document.location.href = "/";
@@ -91,6 +95,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (res.ok) setUser(null);
     } catch (error) {
+      notify("Logout failed.", "error");
       console.error("Logout failed", error);
     } finally {
       setLoading(false);

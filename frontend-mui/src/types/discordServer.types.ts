@@ -1,3 +1,5 @@
+import { AlertColor } from "@mui/material";
+
 export type DiscordServerType = {
   serverId: string;
   name: string;
@@ -100,3 +102,19 @@ export interface DiscordServerContextType {
   categories: { name: string; id: string }[];
   emojis: EmojiType[];
 }
+
+export type NotificationItem = {
+  id: number;
+  message: string;
+  severity?: AlertColor;
+  duration?: number;
+};
+
+export type NotificationManagerProps = {
+  notifications: NotificationItem[];
+  onClose: (id: number) => void;
+};
+
+export type NotificationContextType = {
+  notify: (message: string, severity?: NotificationItem["severity"]) => void;
+};

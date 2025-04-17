@@ -17,6 +17,7 @@ import {
   MultiPanelType,
   PanelType,
 } from "../types/discordServer.types";
+import { useNotification } from "./notification/NotificationContext";
 
 const DiscordServerContext = createContext<DiscordServerContextType | null>(
   null
@@ -38,6 +39,7 @@ export const DiscordServerProvider = ({
   children: ReactNode;
 }) => {
   const { id } = useParams();
+  const { notify } = useNotification();
   const [discordServer, setDiscordServer] = useState<DiscordServerType | null>(
     null
   );
@@ -124,6 +126,7 @@ export const DiscordServerProvider = ({
         setDiscordServer(data.discordServer);
       } catch (error) {
         console.error(error);
+        notify("Something went wrong in fetching the server.", "error");
         setError("Something went wrong in the server, please try again.");
       } finally {
         setLoading(false);
@@ -165,6 +168,7 @@ export const DiscordServerProvider = ({
       const data: ChannelData = await res.json();
       return data;
     } catch (error) {
+      notify("Something went wrong in fetching channels.", "error");
       setError("Something went wrong in fetching channels, please try again.");
       console.log(error);
       return;
@@ -195,6 +199,7 @@ export const DiscordServerProvider = ({
       } = await res.json();
       return data;
     } catch (error) {
+      notify("Something went wrong in fetching panels.", "error");
       setError("Something went wrong in fetching panels, please try again.");
       console.log(error);
       return;
@@ -216,6 +221,7 @@ export const DiscordServerProvider = ({
       } = await res.json();
       return data;
     } catch (error) {
+      notify("Something went wrong in fetching roles and categories.", "error");
       setError(
         "Something went wrong in fetching roles and categories, please try again."
       );
@@ -234,6 +240,7 @@ export const DiscordServerProvider = ({
       const data: EmojiType[] = await res.json();
       return data;
     } catch (error) {
+      notify("Something went wrong in fetching emojis.", "error");
       setError("Something went wrong in fetching emojis, please try again.");
       console.log(error);
       return;

@@ -20,6 +20,7 @@ import CustomSwitch from "../../../components/CustomSwitch";
 import DividerWithTitle from "../../../components/DividerWithTitle";
 import { PlainButton } from "../../../components/PlainButton";
 import { useParams } from "react-router-dom";
+import { useNotification } from "../../../context/notification/NotificationContext";
 
 const styles = { marginLeft: 2.5, marginBottom: 1.5, marginTop: 0.5 };
 const parentStyle = {
@@ -39,6 +40,7 @@ const parentStyle = {
 
 export default function CreatePanel() {
   const { id } = useParams();
+  const { notify } = useNotification();
   const { roles, categories, channels, emojis, discordServer } =
     useDiscordServer();
   const [mentionOnOpen, setMentionOnOpen] = useState<string[]>([]);
@@ -70,7 +72,6 @@ export default function CreatePanel() {
   const [footerText, setFooterText] = useState("");
   const [footerIconUrl, setFooterIconUrl] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleCreate = async () => {
     try {
@@ -84,7 +85,7 @@ export default function CreatePanel() {
         (footerText === "" && footerIconUrl !== "");
 
       if (hasMissingInputs) {
-        setErrorMessage("There are missing inputs");
+        notify("There are missing inputs.", "warning");
         return;
       }
 
@@ -129,7 +130,6 @@ export default function CreatePanel() {
       );
 
       if (!res.ok) {
-        setErrorMessage("Failed to create panel for the server.");
         throw new Error("Failed to create panel for the server.");
       }
 
@@ -137,7 +137,7 @@ export default function CreatePanel() {
       // console.log(data);
       if (data) window.location.reload();
     } catch (error) {
-      setErrorMessage("Failed to create panel for the server.");
+      notify("Failed to create panel for the server.", "warning");
       console.error(error);
     } finally {
       setIsSaving(false);
@@ -175,24 +175,6 @@ export default function CreatePanel() {
     },
     []
   );
-
-  // if (!isSaving && errorMessage) {
-  //   return (
-  //     <Box
-  //       sx={{
-  //         ...parentStyle,
-  //         display: "flex",
-  //         alignItems: "center",
-  //         justifyContent: "center",
-  //         textAlign: "center",
-  //       }}
-  //     >
-  //       <Typography variant="h5" color="white">
-  //         {errorMessage}
-  //       </Typography>
-  //     </Box>
-  //   );
-  // }
 
   return (
     <Box sx={parentStyle}>
