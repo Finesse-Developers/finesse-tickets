@@ -38,7 +38,10 @@ export const getAdminServers = async (
 
     const userGuildsData = (await response.json()) as UserGuildDataType[];
 
-    const mutualAdminGuilds = await filterAdminServers(userGuildsData);
+    const mutualAdminGuilds = filterAdminServers(userGuildsData);
+
+    req.session.adminGuilds = mutualAdminGuilds.map((g) => g.id);
+    req.session.save();
 
     res.json(mutualAdminGuilds);
     return;

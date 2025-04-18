@@ -20,19 +20,18 @@ function App() {
             <Route index element={<Home />} />
 
             {/* Protected Routes for logged in users */}
-            <Route element={<AuthProtectedRoutes />}>
+            <Route
+              element={
+                <DiscordServerProvider>
+                  <AuthProtectedRoutes />
+                </DiscordServerProvider>
+              }
+            >
               <Route path="/dashboard" element={<DashboardServers />} />
 
               {/* Use server provider when id only exists */}
 
-              <Route
-                path="/dashboard/:id"
-                element={
-                  <DiscordServerProvider>
-                    <Dashboard />
-                  </DiscordServerProvider>
-                }
-              >
+              <Route path="/dashboard/:id" element={<Dashboard />}>
                 <Route index element={<Settings />} />
                 <Route path="panel">
                   <Route index element={<Panels />} />

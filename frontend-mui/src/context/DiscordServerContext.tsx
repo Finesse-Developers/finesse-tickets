@@ -10,6 +10,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { redirectToHomeIfNotAuth } from "../guards/Auth.ProtectedRoutes";
 import {
+  AdminServerType,
   ChannelData,
   DiscordServerContextType,
   DiscordServerType,
@@ -55,6 +56,8 @@ export const DiscordServerProvider = ({
     []
   );
   const [emojis, setEmojis] = useState<EmojiType[]>([]);
+  const [adminServers, setAdminServers] = useState<AdminServerType[]>([]);
+  const [adminServersLoading, setAdminServersLoading] = useState(false);
   const nav = useNavigate();
 
   useEffect(() => {
@@ -247,6 +250,33 @@ export const DiscordServerProvider = ({
     }
   }, [id]);
 
+  const getAllAdminServers = useCallback(async () => {
+    try {
+      setError(null);
+      setAdminServersLoading(true);
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/dashboard`, {
+        credentials: "include",
+      });
+
+      redirectToHomeIfNotAuth(res, nav);
+
+      const data = await res.json();
+      if ((data as AdminServerType[]).length <= 0)
+        setError(
+          "No servers found, please invite the bot on your discord server."
+        );
+      setAdminServers(data);
+    } catch (error) {
+      console.error(error);
+      notify(
+        "There is something wrong with fetching the discord servers.",
+        "error"
+      );
+    } finally {
+      setAdminServersLoading(false);
+    }
+  }, []);
+
   const contextValue = useMemo(
     () => ({
       discordServer,
@@ -259,6 +289,9 @@ export const DiscordServerProvider = ({
       roles,
       categories,
       emojis,
+      adminServers,
+      getAllAdminServers,
+      adminServersLoading,
     }),
     [
       discordServer,
@@ -271,6 +304,9 @@ export const DiscordServerProvider = ({
       roles,
       categories,
       emojis,
+      adminServers,
+      getAllAdminServers,
+      adminServersLoading,
     ]
   );
 

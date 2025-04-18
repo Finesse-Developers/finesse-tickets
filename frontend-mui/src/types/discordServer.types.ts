@@ -26,6 +26,12 @@ export type DiscordServerType = {
   staffMembers: string[]; // array of discord user ids
 };
 
+export type AdminServerType = {
+  id: string;
+  icon: string | null;
+  name: string;
+};
+
 export type PanelType = {
   serverId: string;
   mentionOnOpenRoleIds: string[];
@@ -86,23 +92,6 @@ export type EmojiType = {
   url: string;
 };
 
-export interface DiscordServerContextType {
-  discordServer: DiscordServerType | null;
-  getServer: (server: DiscordServerType) => void;
-  channels: {
-    name: string;
-    value: string;
-    disabled: boolean;
-  }[];
-  loading: boolean;
-  error: string | null;
-  panels: PanelType[];
-  multiPanels: MultiPanelType[];
-  roles: { name: string; id: string }[];
-  categories: { name: string; id: string }[];
-  emojis: EmojiType[];
-}
-
 export type NotificationItem = {
   id: number;
   message: string;
@@ -118,3 +107,23 @@ export type NotificationManagerProps = {
 export type NotificationContextType = {
   notify: (message: string, severity?: NotificationItem["severity"]) => void;
 };
+
+export interface DiscordServerContextType {
+  discordServer: DiscordServerType | null;
+  getServer: (server: DiscordServerType) => void;
+  channels: {
+    name: string;
+    value: string;
+    disabled: boolean;
+  }[];
+  loading: boolean;
+  error: string | null;
+  panels: PanelType[];
+  multiPanels: MultiPanelType[];
+  roles: { name: string; id: string }[];
+  categories: { name: string; id: string }[];
+  emojis: EmojiType[];
+  getAllAdminServers: () => Promise<void>;
+  adminServers: AdminServerType[];
+  adminServersLoading: boolean;
+}
