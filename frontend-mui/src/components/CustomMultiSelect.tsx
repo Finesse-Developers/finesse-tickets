@@ -17,7 +17,7 @@ type MultiSelectItem = {
 };
 
 type CustomMultiSelectProps = {
-  values: string[];
+  values: any[];
   handleChange: (event: SelectChangeEvent<string[]>) => void;
   items: MultiSelectItem[];
   id: string;
@@ -42,8 +42,16 @@ function CustomMultiSelect({
       renderValue={(selected) => {
         if (selected.length === 0) return placeholder;
 
-        const selectedNames = (selected as string[])
-          .map((val) => items.find((item) => item.value === val)?.name)
+        // Determine if values are objects or strings
+        const selectedNames = (selected as any[])
+          .map((val) => {
+            if (typeof val === "string") {
+              return items.find((item) => item.value === val)?.name;
+            } else if (val && typeof val === "object" && "name" in val) {
+              return val.name;
+            }
+            return null;
+          })
           .filter(Boolean);
 
         return (
@@ -114,12 +122,18 @@ function CustomMultiSelect({
         },
       }}
     >
-      {items.map((item, i) => (
-        <MenuItem key={i} value={item.value} disabled={item.disabled}>
-          <Checkbox checked={values.includes(item.value)} />
-          <ListItemText primary={item.name} />
-        </MenuItem>
-      ))}
+      {items.map((item, i) => {
+        const isChecked = values.some((val) =>
+          typeof val === "string" ? val === item.value : val.id === item.value
+        );
+
+        return (
+          <MenuItem key={i} value={item.value} disabled={item.disabled}>
+            <Checkbox checked={isChecked} />
+            <ListItemText primary={item.name} />
+          </MenuItem>
+        );
+      })}
     </Select>
   );
 }

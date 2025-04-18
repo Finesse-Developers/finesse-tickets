@@ -21,28 +21,12 @@ import DividerWithTitle from "../../../components/DividerWithTitle";
 import { PlainButton } from "../../../components/PlainButton";
 import { useParams } from "react-router-dom";
 import { useNotification } from "../../../context/notification/NotificationContext";
-
-const styles = { marginLeft: 2.5, marginBottom: 1.5, marginTop: 0.5 };
-const parentStyle = {
-  width: "75%",
-  height: "95%",
-  boxSizing: "border-box",
-  borderRadius: 2,
-  border: "2px solid white",
-  backgroundColor: "transparent",
-  color: "white",
-  alignSelf: "flex-start",
-  marginLeft: 5,
-  marginTop: 1.5,
-  padding: 0,
-  overflowY: "auto",
-};
+import { parentStyle, styles } from "../../../utils/helper";
 
 export default function CreatePanel() {
   const { id } = useParams();
   const { notify } = useNotification();
-  const { roles, categories, channels, emojis, discordServer } =
-    useDiscordServer();
+  const { roles, categories, channels, emojis } = useDiscordServer();
   const [mentionOnOpen, setMentionOnOpen] = useState<string[]>([]);
   const [ticketCategoryId, setTicketCategoryId] = useState("");
   const [title, setTitle] = useState("");
@@ -78,7 +62,7 @@ export default function CreatePanel() {
       setIsSaving(true);
 
       const hasMissingInputs =
-        [discordServer?.serverId, panelChannel, title, welcomeTitle].some(
+        [id, panelChannel, title, welcomeTitle].some(
           (val) => val === "" || val === undefined || val === null
         ) ||
         (welcomeTitle === "" && welcomeTitleUrl !== "") ||
@@ -90,7 +74,7 @@ export default function CreatePanel() {
       }
 
       const payload = {
-        serverId: discordServer?.serverId || "",
+        serverId: id || "",
         mentionOnOpenRoleIds: mentionOnOpen,
         ticketCategoryId,
         panelTitle: title,
@@ -602,7 +586,7 @@ export default function CreatePanel() {
             },
           }}
         >
-          Large image url
+          Small image url
         </FormLabel>
 
         <CustomTextField

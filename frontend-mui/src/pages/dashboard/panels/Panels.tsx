@@ -108,7 +108,7 @@ export default function Panels() {
             </Typography>
 
             <Link
-              to={`/dashboard/${id}/panel/create`}
+              to={`/dashboard/${id}/panel/multi-create`}
               style={{ textDecoration: "none" }}
             >
               <PlainButton>+ New Multi-Panel</PlainButton>

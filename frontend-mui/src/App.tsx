@@ -10,6 +10,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import Settings from "./pages/dashboard/Settings";
 import Panels from "./pages/dashboard/panels/Panels";
 import CreatePanel from "./pages/dashboard/panels/CreatePanel";
+import MultiPanel from "./pages/dashboard/panels/MultiPanel";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
                 <Route path="panel">
                   <Route index element={<Panels />} />
                   <Route path="create" element={<CreatePanel />} />
+                  <Route path="multi-create" element={<MultiPanel />} />
                 </Route>
               </Route>
             </Route>

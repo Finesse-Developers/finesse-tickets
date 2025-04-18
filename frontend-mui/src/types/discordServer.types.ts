@@ -33,6 +33,7 @@ export type AdminServerType = {
 };
 
 export type PanelType = {
+  id: string;
   serverId: string;
   mentionOnOpenRoleIds: string[];
   ticketCategoryId: string;
